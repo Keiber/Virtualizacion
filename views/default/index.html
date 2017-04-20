@@ -100,6 +100,8 @@
                         </div>
                     </div>
             </div>
+
+           
                    
 
         </div>
@@ -122,8 +124,63 @@
                         </div>
                     </div>
             </div>
+
+             <div class="row">
+                    <button class="btn btn-info" style="margin: 0 auto; width: 100%;"> Responder </button>
+            </div>
                    
 
+        </div>
+
+        <div id="notification_create" style="visibility: hidden; width:50%; position: absolute; margin: 0 auto; vertical-align:top; float:center; z-index:3; opacity: 1.0; left: 30%; top: 10px;">
+            <form enctype="multipart/form-data" action="/Virtualizacion/default/create_notif" method="post">
+
+            <div class="row" style="background-color: #808080">
+                <div class="col-lg-8">
+                    <h1 class="page-header"> Crear Notificación</h1>
+                </div>
+                <div class="col-lg-4">
+                    <button class="btn btn-info" onclick="back_opacity()" style="margin: 0 auto; width: 100%; margin-top: 20%"> Volver </button>
+                </div>
+            </div>
+
+
+
+             <div class="row"  style="background-color: #808080">
+                    <div class="col-lg-6"> 
+                        <h4>Seleccione el receptor: </h4>
+                        <select class="form-control" name="user_receptor" id="user_receptor">
+
+                        {{ for i in range(length_users):}} 
+
+                          <option> {{=users[i].f_first_name}} </option>
+                        
+                        {{pass}} 
+                        </select> 
+                    </div>
+                    <div class="col-lg-6">
+                         <h4>Título</h4>
+                         <div class="form-group">
+                              <input type="text" class="form-control" name="titulo" id="titulo" required>
+                         </div>
+                    </div>
+            </div>
+
+            <div class="row"  style="background-color: #808080">
+                 <div class="col-lg-12" style="margin: 10px;"> 
+                    <div class="form-group">
+                      <label for="comment">Contenido:</label>
+                      <textarea class="form-control" rows="5" id="comment" name="contenido" required></textarea>
+                    </div>
+                 </div>
+            </div>
+
+
+             <div class="row">
+                    <button class="btn btn-info" type="submit" style="margin: 0 auto; width: 100%;"> Enviar </button>
+            </div>
+                   
+        </form>
         </div>
 
         <!-- Page Content -->
@@ -194,7 +251,9 @@
                                 {{else:}}
                                      <a href="#" class="btn btn-default btn-block">Ver todas las notificaciones</a>
                                 {{pass}} -->
-                                
+                                <div class="panel-heading">
+                                    <button class="btn btn-info" onclick="crear_notificacion()" style="margin: 0 auto; width: 100%;"> Crear notificación </button>                                
+                                </div>
                             </div>
                             <!-- /.panel-body -->
                         </div>
@@ -261,6 +320,25 @@
       //  console.log(array.created_on.substring(18,array.created_on.length-1));
         $("#notificacion_dynamic").append("<div class='panel-body'> <div><h3> Contenido </h3> </div> <div>"+ array.f_content+ "</div> <br><div> <strong> Fecha de notificación: </strong>" + string_to_date(array.created_on)+"</div></div>");
 
+    }
+
+    function crear_notificacion(){
+        $("#notification_create").css("visibility" , "visible");
+
+         $("#page-content-wrapper").css("opacity", "0.1");
+        $("#registrar-wrapper").css("opacity", "0.1");     
+        $("#programa").css("opacity", "0.1");
+        $("#notificacion_view").css("opacity", "0.1");
+
+    }
+
+    function back_opacity(){
+        $("#notification_create").css("visibility" , "hidden");
+
+         $("#page-content-wrapper").css("opacity", "1.0");
+        $("#registrar-wrapper").css("opacity", "1.0");     
+        $("#programa").css("opacity", "1.0");
+        $("#notificacion_view").css("opacity", "1.0");
     }
 
     function string_to_date(string){

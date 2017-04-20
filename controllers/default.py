@@ -24,10 +24,30 @@ def index():
     for row in notificacion:
         usuarios.append( db(db.t_usuario.id == row.f_usuario_a).select(db.t_usuario.f_first_name, distinct=False) )
         n=n+1
-    return dict(query=res, length_query = res_n, notification = notificacion, length_notification = n, notification_emited = usuarios)
+
+    usuarios_sistema = db(db.t_usuario).select()
+
+    return dict(query=res, length_query = res_n, notification = notificacion, length_notification = n, notification_emited = usuarios, users = usuarios_sistema, length_users = len(usuarios_sistema))
 
 def error():
     return dict()
+
+
+@auth.requires_login()
+def create_notif():
+    user_emisor, user_receptor, titulo, contenido = auth.user.id, request.post_vars['user_receptor'], request.post_vars['titulo'], request.post_vars['contenido']
+    select = db(db.t_usuario.f_first_name == user_receptor).select()
+    id_receptor = 0
+    for row in select:
+        id_receptor = row.id
+    db.t_notification.insert(
+        f_usuario_a = user_emisor,
+        f_usuario_b = id_receptor,
+        f_tittle = titulo,
+        f_viewed = False,
+        f_content = contenido
+        )    
+    return index()
 
 @auth.requires_login()
 def insert():
