@@ -5354,3 +5354,122 @@ success!
 success!
 success!
 success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2017-04-19T20:40:06.148000
+CREATE TABLE t_course_project(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    f_name CHAR(512),
+    f_modality CHAR(512),
+    f_code CHAR(512) UNIQUE,
+    f_responsable INTEGER REFERENCES t_usuario (id) ON DELETE CASCADE  ,
+    f_duration INTEGER,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2017-04-19T20:50:05.951000
+ALTER TABLE t_resource ADD f_area CHAR(512);
+success!
+timestamp: 2017-04-19T20:50:06.020000
+ALTER TABLE t_recurso_archive ADD f_area CHAR(512);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
