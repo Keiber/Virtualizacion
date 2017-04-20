@@ -1,0 +1,69 @@
+{{extend 'layout.html'}}
+<section id="project_manage">
+	<div class="container">
+		<div id="create_project_form" enctype="multipart/form-data" action="/Virtualizacion/gestion_programa/project_creator" method="post">
+			<br>
+			<h4>Iniciar Proyecto</h4>
+
+			<div class="container">
+				<strong><h5>Lista de programas disponibles:</h5></strong>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th class="col-md-2">Codigo</th>
+							<th class="col-md-3">Nombre</th>
+							<th class="col-md-3">Modalidad</th>
+							<th class="col-md-2">Estado</th>
+							<th class="col-md-2">Acción</th>
+						</tr>
+					</thead>
+					<tbody id="main_table">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script type="text/javascript">
+var restAPI = '/Virtualizacion/rest/';
+var postRestAPI = '/Virtualizacion/gestion_programa/';
+var baseURI = '/Virtualizacion/default/';
+
+jQuery(document).ready(function($) {
+	//-- get values for main_table
+	$.get(restAPI + 'get_programs_data.json', function(response) {
+		$.each(response.data, function(index, value) {
+			var tr = $("<tr>");
+			var td = new Array();
+			td.push($('<td class="col-md-2">').text(value.f_code));
+			td.push($('<td class="col-md-3">').text(value.f_name));
+			td.push($('<td class="col-md-3">').text(value.f_modality));
+			td.push($('<td class="col-md-2">').text(value.is_active));
+			td.push($('<td class="col-md-2"><button class="btn btn-default create_project" onclick="sendPost(this)">Virtualizar</button></td>'));
+			$.each(td, function(index, td_val) {
+				tr.append(td_val);	 
+			});
+			$('#main_table').append(tr);
+		});
+	});
+});
+
+function sendPost(element){
+	var el = $(element);
+	var sub_data = el.parent().siblings('td');
+	var parent_tr = el.parent().parent();
+	var data = {
+		'codigo': $(sub_data[0]).text(),
+		'nombre': $(sub_data[1]).text()
+	};
+	$.post(postRestAPI+'project_creator.json', data, function(response, textStatus, xhr) {
+		/*optional stuff to do after success */
+		if (response.status){
+			$(parent_tr).addClass("success");
+			location.replace(baseURI+'project_asign_responsibles?codigo='+data.codigo);
+		}else alert("Error, por favor recargue la página");
+	});
+}
+
+</script>

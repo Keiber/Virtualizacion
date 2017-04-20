@@ -1,0 +1,336 @@
+{{extend 'layout.html'}}
+
+<div id="wrapper" style="margin-top:-20px">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a id="principal" href="#">
+                        Principal
+                    </a>
+                </li>
+                <li>
+                    <a id="register" href="#">Registrar Usuario</a>
+                </li>
+                <li>
+                    <a href="/Virtualizacion/default/registrar_usuario" href="#">Events</a>
+                </li>
+                <li>
+                    <a href="#">About</a>
+                </li>
+                <li>
+                    <a href="#">Services</a>
+                </li>
+                <li>
+                    <a href="#">Contact</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <div id="registrar-wrapper" style="visibility: hidden; width:50%; margin-bottom: 20px; position: absolute; margin: 0 auto; vertical-align:top;">
+            <div class="container-fluid">
+                <div class="row" >
+                    <h2>Registrar Usuario</h2>
+                    <!--<p>(<a href="{{=URL('database_users')}}">Ver usuarios registrados</a>)</p>  -->
+
+                    <form enctype="multipart/form-data" action="/Virtualizacion/default/insert" method="post"> <!--{{#or use =form.custom.begin}}-->
+                        <br>
+                        <h4>Usuario</h4>
+                        <div class="form-group">
+                              <input type="text" class="form-control" name="user_name" required>
+                         </div>
+
+                        <h4>Nombre</h4> 
+                         <div class="form-group">
+                              <input type="text" class="form-control" name="name" required>
+                         </div>
+                         <h4>Apellido</h4>
+                         <div class="form-group">
+                              <input type="text" class="form-control" name="last_name" required>
+                         </div>
+                         <h4>Número de Teléfono</h4>
+                         <div class="form-group">
+                              <input type="tel" class="form-control" name="phone" required>
+                         </div>
+                         <h4>Tipo de Usuario</h4>
+                         <select class="form-control" name="user_type">
+                          <option>Diseñador instruccional</option>
+                          <option>Responsable de contenido</option>
+                          <option>Sincronizador</option>
+                          <option>Técnico multimedia</option>
+                          <option>Director de proyecto</option>
+                          <option>Coordinador multimedia</option>
+                          <option>Coordinador audiovisual</option>
+                          <option>Especialista de diseñador instruccional</option>
+                        </select>
+                        <h4>Email</h4>
+                         <div class="form-group">
+                              <input type="email" class="form-control" name="email" required>
+                         </div>
+                        <h4>Contraseña</h4>
+                         <div class="form-group">
+                              <input type="password" class="form-control" name="password" required>
+                         </div>
+                         <button type="submit">
+                               Submit
+                         </button>
+                    </form> <!--{{#or use =form.custom.end}}-->
+
+                </div>
+            </div>
+
+        </div>
+
+        <div id="programa" style="visibility: hidden; width:50%; margin-bottom: 20px; position: absolute; margin: 0 auto; vertical-align:top;">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h1 class="page-header"> Ver Programa</h1>
+                </div>
+                <div class="col-lg-4">
+                    <button class="btn btn-info" onclick="back()" style="margin: 0 auto; width: 100%; margin-top: 20%"> Volver </button>
+                </div>
+            </div>
+             <div class="row">
+                    <div class="col-lg-12">
+                         <div id="panel_programa" class="panel panel-default">
+                            <div id="programa_dynamic">
+
+                            </div>
+                        </div>
+                    </div>
+            </div>
+                   
+
+        </div>
+
+        <div id="notificacion_view" style="visibility: hidden; width:50%; margin-bottom: 20px; position: absolute; margin: 0 auto; vertical-align:top;">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h1 class="page-header"> Ver Notificación</h1>
+                </div>
+                <div class="col-lg-4">
+                    <button class="btn btn-info" onclick="back()" style="margin: 0 auto; width: 100%; margin-top: 20%"> Volver </button>
+                </div>
+            </div>
+             <div class="row">
+                    <div class="col-lg-12">
+                         <div id="panel_notification" class="panel panel-default">
+                            <div id="notificacion_dynamic">
+
+                            </div>
+                        </div>
+                    </div>
+            </div>
+                   
+
+        </div>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper" style="visibility: visible;">
+            <div class="container-fluid">
+             <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Dashboard</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Programas en curso
+                        </div>
+                        <!-- /.panel-heading -->
+                            <div class="panel-body">
+                                <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>                                          
+                                            <th>Modalidad</th>
+                                            <th>Estado</th>
+                                            <th>Código</th>
+                                            <th>Fecha creación</th>
+                                            <th>Ver</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{ for i in range(length_query):}} 
+                                            <tr>
+                                                <td>{{=query[i].f_name}}</td>
+                                                <td>{{=query[i].f_modality}}</td>
+                                                <td>Procesando</td>
+                                                <td>{{=query[i].f_code}}</td>
+                                                <td>{{=query[i].created_on.date().strftime('%d-%m-%Y')}}</td> 
+                                                <td><button id="programa_{{=i+1}}" onclick="ver_publicacion(this)" type="button" programa="{{=query[i]}}" class="btn btn-info" style="width: 100%; position: relative;">Ver</button></td>
+                                            </tr>
+                                        {{pass}} 
+                                    </tbody>
+                                    </table>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div class="col-lg-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="glyphicon glyphicon-bell"></i> Notifications Panel
+                            </div>
+                            <!-- /.panel-heading -->
+                            <div class="panel-body">
+                                <div class="list-group">
+                                    {{ for i in range(length_notification):}}                                     
+                                         <a id="notification_{{=i+1}}" href="#" onclick="ver_notificacion(this)" notification="{{=notification[i]}}" class="list-group-item">
+                                            <i class="glyphicon glyphicon-envelope"></i> {{=notification[i].f_tittle}}
+                                            <span class="pull-right text-muted small"><em>{{=notification[i].created_on.date().strftime('%d-%m-%Y')}}</em>
+                                            </span>
+                                         </a>
+                                    {{pass}} 
+                                </div>
+                                <!-- /.list-group -->
+                                <!--{{ if length_notification == 0:}}
+                                    <a href="#" class="btn btn-default btn-block">No posees notificaciones</a>
+                                {{else:}}
+                                     <a href="#" class="btn btn-default btn-block">Ver todas las notificaciones</a>
+                                {{pass}} -->
+                                
+                            </div>
+                            <!-- /.panel-body -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+   <!-- Menu Toggle Script -->
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+
+    $("#register").click(function(){  
+    	$("#page-content-wrapper").css("visibility", "hidden");
+        $("#programa").css("visibility", "hidden");
+        $("#notificacion_view").css("visibility", "hidden");
+    	$("#registrar-wrapper").css("visibility", "visible");    
+
+        	
+    });
+
+    $("#principal").click(function () {
+    	$("#page-content-wrapper").css("visibility", "visible");
+    	$("#registrar-wrapper").css("visibility", "hidden");
+        $("#notificacion_view").css("visibility", "hidden");
+        $("#programa").css("visibility", "hidden");
+    })
+
+    function ver_publicacion (argument) {       
+        $("#page-content-wrapper").css("visibility", "hidden");
+        $("#registrar-wrapper").css("visibility", "hidden");
+        $("#notificacion_view").css("visibility", "hidden");
+        $("#programa").css("visibility", "visible");
+        var pub = argument.id;
+        var programa = $("#"+pub).attr("programa");    
+        var array = row_to_json(programa);    
+        $("#programa_dynamic").remove();
+        $("#panel_programa").append("<div id='programa_dynamic'></div>");
+        $("#programa_dynamic").append("<div id='tittle_programa' class='panel-heading'> <h2>"+array.f_name +" </h2></div>");
+        $("#programa_dynamic").append("<div class='panel-body'><div><h3>Codigo del programa<h3></div><div>"+ array.f_code+ "</div> <br><div><h3>Modalidad<h3></div><div>"+ array.f_modality+ "</div> <br> <div> <strong> Fecha de creación: </strong>" + string_to_date(array.created_on)+"</div></div>");
+    }
+
+    function ver_notificacion (argument) {
+        $("#page-content-wrapper").css("visibility", "hidden");
+        $("#registrar-wrapper").css("visibility", "hidden");        
+        $("#programa").css("visibility", "hidden");
+        $("#notificacion_view").css("visibility", "visible");
+        var not = argument.id;
+        var notif = $("#"+not).attr("notification");
+        var array = row_to_json(notif);
+        $("#notificacion_dynamic").remove();
+        $("#panel_notification").append("<div id='notificacion_dynamic'></div>");
+        $("#notificacion_dynamic").append("<div id='tittle_notificacion' class='panel-heading'> <h2>"+array.f_tittle +" </h2></div>");
+      //  console.log(array.created_on.substring(18,array.created_on.length-1));
+        $("#notificacion_dynamic").append("<div class='panel-body'> <div><h3> Contenido </h3> </div> <div>"+ array.f_content+ "</div> <br><div> <strong> Fecha de notificación: </strong>" + string_to_date(array.created_on)+"</div></div>");
+
+    }
+
+    function string_to_date(string){
+        var valor = string.substring(18,string.length-1).split(",");
+        var date = new Date(valor[0], valor[1], valor[2]);
+        return date.getDate()+"-"+date.getMonth()+"-"+date.getFullYear();
+    } 
+
+    function back(){
+        $("#page-content-wrapper").css("visibility", "visible");
+        $("#registrar-wrapper").css("visibility", "hidden");
+         $("#notificacion_view").css("visibility", "hidden");
+        $("#programa").css("visibility", "hidden");        
+    }
+
+    function row_to_json(row){ //STRING
+        var array = [];
+        var char_aux;
+        var bool_pair = false;
+        var string1 = "";
+        var string2 = "";
+        for (var i = 0; i < row.length; i++) {
+            char_aux = row[i];
+            if(char_aux == "'"){
+                if(!bool_pair){
+                    i++;
+                    char_aux = row[i];
+                    string1 = "";
+                    while(char_aux != "'"){
+                        string1 += char_aux;
+                        i++;
+                        char_aux = row[i];
+                    }
+                i++;
+                bool_pair = true;
+                }else{
+                    i++;
+                    string2 = "";
+                    char_aux = row[i];
+                    while(char_aux != "'"){
+                        string2 += char_aux;
+                        i++;
+                        char_aux = row[i];
+                    }
+                i++;
+                bool_pair = false;
+                array.push(string1);
+                array.push(string2);
+                }
+
+            }else if(bool_pair && char_aux==" " && row[i+1] != "'"){
+                i++;
+                string2 = "";
+                char_aux = row[i];
+                while(char_aux != "L" && char_aux != "}" && (char_aux != "," || (string2.includes("datetime") && row[i-1] != ")"  ) ) ){
+                    string2 += char_aux;
+                    i++;
+                    char_aux = row[i];
+                }
+                i++;
+                bool_pair = false;
+                array.push(string1);
+                array.push(string2);
+            }
+            
+
+        };
+        var data = new Object();
+        for (var i = 0; i < array.length; i=i+2) {
+            data[array[i]] = array[i+1];
+        };
+        return data;
+    }
+
+
+    </script>

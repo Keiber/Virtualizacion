@@ -1,0 +1,27 @@
+{{extend 'layout.html'}}
+<section id="program_manage">
+	<div class="container">
+		<form enctype="multipart/form-data" action="/Virtualizacion/default/program_creator" method="post">
+			<br>
+			<h4>Tipo de Programa</h4>
+			<div class="form-group">
+				<select class="form-control" name="program_type">
+					<!-- >=4 (Semestral, Trimestral, Anual) -->
+					<option value="carreraLarga">Carrera Larga</option>
+					<!-- >=2 && <=3 (Semestral, Trimestral, Anual) -->
+					<option value="carreraCorta">Carrera Corta</option>
+					<!-- Especializacion 2, Maestria 3, Doctorado 5 (Semestre, Anual) -->
+					<option value="postgrado">Postgrado</option>
+					<!-- Diplomado -->
+					<option value="diplomado">Diplomado</option>
+					<!---->
+					<option value="curso">Curso</option>
+					<option value="programa">Programa</option>
+				</select>
+			</div>
+			<button type="submit" class="btn btn-default">
+			Crear Programa
+			</button>
+		</form>
+	</div>
+</section>

@@ -1,0 +1,262 @@
+(dp0
+S'page_user_manage'
+p1
+S'## Manage user\r\n\r\n{{=form}}'
+p2
+sS'table_programa'
+p3
+(lp4
+S'name'
+p5
+aS'duration integer'
+p6
+aS'date_start date'
+p7
+aS'date_end date'
+p8
+aS'program programa'
+p9
+aS'course curso'
+p10
+asS'table_auth_user'
+p11
+(lp12
+S'username'
+p13
+aS'first_name'
+p14
+aS'last_name'
+p15
+aS'email'
+p16
+aS'password'
+p17
+asS'table_has_course'
+p18
+(lp19
+S'program_has program'
+p20
+aS'course_has course'
+p21
+asS'table_user'
+p22
+(lp23
+S'username'
+p24
+aS'first_name'
+p25
+aS'last_name'
+p26
+aS'email'
+p27
+aS'password'
+p28
+aS'type_user'
+p29
+asS'tables'
+p30
+(lp31
+S'auth_user'
+p32
+aS'usuario'
+p33
+aS'course'
+p34
+aS'program'
+p35
+aS'has_course'
+p36
+asS'page_course_manage'
+p37
+S'## Manage course\r\n\r\n{{=form}}'
+p38
+sS'table_program'
+p39
+(lp40
+S'name'
+p41
+aS'code'
+p42
+aS'date_start date'
+p43
+aS'date_end date'
+p44
+aS'duration integer'
+p45
+asS'table_curso'
+p46
+(lp47
+S'name'
+p48
+aS'code unique'
+p49
+aS'date_start date'
+p50
+aS'date_end date'
+p51
+aS'duration integer'
+p52
+asS'page_error'
+p53
+S'# Error: the document does not exist'
+p54
+sS'params'
+p55
+(lp56
+(S'title'
+p57
+S'Gestor de virtualizacion'
+p58
+tp59
+a(S'subtitle'
+p60
+S'powered by web2py'
+p61
+tp62
+a(S'author'
+p63
+S'Aminosoft'
+p64
+tp65
+a(S'author_email'
+p66
+S'aminosoft@gmail.com'
+p67
+tp68
+a(S'keywords'
+p69
+S''
+p70
+tp71
+a(S'description'
+p72
+g70
+tp73
+a(S'layout_theme'
+p74
+S'Default'
+p75
+tp76
+a(S'database_uri'
+p77
+S'sqlite://storage.sqlite'
+p78
+tp79
+a(S'security_key'
+p80
+S'7f5ca65b-7d58-4275-80df-46576ed49837'
+p81
+tp82
+a(S'email_server'
+p83
+S'localhost'
+p84
+tp85
+a(S'email_sender'
+p86
+S'you@example.com'
+p87
+tp88
+a(S'email_login'
+p89
+g70
+tp90
+a(S'login_method'
+p91
+S'local'
+p92
+tp93
+a(S'login_config'
+p94
+g70
+tp95
+a(S'plugins'
+p96
+(lp97
+tp98
+asS'page_programa_manage'
+p99
+S'## Manage programa\n\n{{=form}}'
+p100
+sS'page_program_manage'
+p101
+S'## Manage program\r\n\r\n{{=form}}'
+p102
+sS'page_usuario_manage'
+p103
+S'## Manage usuario\n\n{{=form}}'
+p104
+sS'page_dashboard'
+p105
+S'[]'
+p106
+sS'page_register_user'
+p107
+S'[]'
+p108
+sS'table_course'
+p109
+(lp110
+S'name'
+p111
+aS'code'
+p112
+aS'date_start date'
+p113
+aS'date_end date'
+p114
+aS'duration integer'
+p115
+asS'pages'
+p116
+(lp117
+S'index'
+p118
+aS'error'
+p119
+aS'user_manage'
+p120
+aS'course_manage'
+p121
+aS'program_manage'
+p122
+aS'has_course_manage'
+p123
+aS'register_user'
+p124
+aS'dashboard'
+p125
+asS'page_has_course_manage'
+p126
+S'## Manage has_course\r\n\r\n{{=form}}'
+p127
+sS'page_curso_manage'
+p128
+S'## Manage curso\n\n{{=form}}'
+p129
+sS'name'
+p130
+S'Virtualizacion'
+p131
+sS'page_index'
+p132
+S'# Login broda'
+p133
+sS'table_usuario'
+p134
+(lp135
+S'username'
+p136
+aS'first_name'
+p137
+aS'last_name'
+p138
+aS'email'
+p139
+aS'password'
+p140
+aS'type_user'
+p141
+aS'notification'
+p142
+as.

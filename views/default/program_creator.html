@@ -1,0 +1,32 @@
+{{extend 'layout.html'}}
+<section id="program_creator">
+	<div class="container">
+		<h2> Nuevo Programa - {{=program_name}} </h2>
+		<form enctype="multipart/form-data" action="/Virtualizacion/default/program_creator_courses?type={{=program_type}}" method="post">
+			<div class="row">
+				<div class="form-group">
+					<label for="name">Nombre del programa:</label>
+					<input type="text" class="form-control" id="name" name="name" required>
+				</div>
+				<div class="form-group">
+					<label for="code">Código:</label>
+					<input type="text" class="form-control" id="code" name="code" required>
+				</div>
+				<div class="form-group">
+					<select class="form-control" name="modality" required>
+						<option value="trimestral">Trimestral</option>
+						<option value="semestral">Semestral</option>
+						<option value="anual">Anual</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="years">Duración (años):</label>
+					<input type="number" class="form-control" id="years" name="years" required>
+				</div>				
+				<button type="submit" class="btn btn-default">
+				Avanzar
+				</button>
+			</div>
+		</div>
+	</form>
+</section>

@@ -1,0 +1,52 @@
+{{extend 'layout2.html'}}
+<div id="wrapper" style="margin-top:-20px">
+
+        <div id="registrar-wrapper" style="visibility: hidden; width:50%; margin: 0 auto; margin-bottom: 20px; margin-top: -15%">
+          <div class="container-fluid">
+            <div class="row" >
+          <h2>Registrar Usuario</h2>
+          <!--<p>(<a href="{{=URL('database_users')}}">Ver usuarios registrados</a>)</p>  -->
+
+          <form enctype="multipart/form-data" action="/Virtualizacion/default/insert" method="post"> <!--{{#or use =form.custom.begin}}-->
+            <br>
+            <h4>Usuario</h4>
+            <div class="form-group">
+                    <input type="text" class="form-control" name="user_name" required>
+               </div>
+
+            <h4>Nombre</h4> 
+               <div class="form-group">
+                    <input type="text" class="form-control" name="name" required>
+               </div>
+               <h4>Apellido</h4>
+               <div class="form-group">
+                    <input type="text" class="form-control" name="last_name" required>
+               </div>
+               <h4>Número de Teléfono</h4>
+               <div class="form-group">
+                    <input type="tel" class="form-control" name="phone" required>
+               </div>
+               <h4>Tipo de Usuario</h4>
+               <div class="form-group">
+                    <input type="text" class="form-control" name="user_type" required>
+               </div>
+            <h4>Email</h4>
+               <div class="form-group">
+                    <input type="email" class="form-control" name="email" required>
+               </div>
+            <h4>Contraseña</h4>
+               <div class="form-group">
+                    <input type="password" class="form-control" name="password" required>
+               </div>
+               <button type="submit">
+                     Submit
+               </button>
+          </form> <!--{{#or use =form.custom.end}}-->
+
+            </div>
+          </div>
+
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>    <!-- /#wrapper -->

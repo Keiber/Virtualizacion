@@ -1,0 +1,116 @@
+{{extend 'layout.html'}}
+<section id="program_creator">
+	<div class="container">
+		<div class="row">
+			{{for x in range(0, duration):}}
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<i><h5>{{=modality}} {{=x}}</h5></i>
+				</div>
+				<div class="container">
+					<h4>Cursos</h4>
+					<p>Cursos registrados:</p>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th class="col-md-4">Código</th>
+								<th class="col-md-4">Nombre</th>
+								<th class="col-md-4">Acción</th>
+							</tr>
+						</thead>
+						<tbody id="main_table_{{=x}}">
+						</tbody>
+					</table>
+				</div>
+				<div class="panel-body">
+					<form enctype="multipart/form-data" action="/Virtualizacion/default/create_course" method="post" program="{{=programs[x]}}" tablespace="#main_table_{{=x}}">
+						<div>
+							<label for="course_code" class="col-md-6">Código:</label>
+							<label for="course_name" class="col-md-6">Nombre:</label>
+							<div class="form-inline col-md-12">
+								<div class="form-group col-md-6">
+									<input type="number" class="form-control col-md-12" id="course_code" name="course_code" placeholder="Código" list="course_code_list_{{=x}}" autocomplete="off">
+									<datalist id="course_code_list_{{=x}}" class="course_code_list"></datalist>
+								</div>
+								<div class="form-group col-md-6">
+									<input type="text" class="form-control col-md-12" id="course_name" name="course_name" placeholder="Nombre" list="course_name_list_{{=x}}" autocomplete="off">
+									<datalist id="course_name_list_{{=x}}" class="course_name_list"></datalist>
+								</div>
+							</div>
+							<br>
+							<div class="form-group">
+								<button type="submit" class="btn btn-default col-md-3">Añadir Curso</button>
+							</div>
+						</div>
+						<br><br><br>
+					</form>
+				</div>
+			</div>
+			{{pass}}
+		</div>
+		<a id="finalizar" class="btn btn-default" href="/Virtualizacion/default/index">Finalizar</a>	
+	</div>
+</section>
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+	var apiURL = '/Virtualizacion/default/';
+	var restAPI = '/Virtualizacion/rest/';
+	var resp = null;
+
+	//-- get values for course_code_list and course_name_list
+	$.get(restAPI + 'get_courses_data.json', function(response) {
+		$.each(response.data, function(index, value) {
+			$('.course_code_list').append($("<option>").val(value.f_code));
+			$('.course_name_list').append($("<option>").val(value.f_name));
+		});
+	});
+
+	jQuery('form').on('submit', function(event) {
+		//-- Event prevent default (Do not reload the page)
+		event.preventDefault();
+
+		//-- Some validations goes here (REMEMBER)
+
+		//-- Get Parameters
+		var data = new Object();
+		$.each($(this).serializeArray(), function(_, val) {
+			data[val.name] = val.value;
+		});
+		data.program = $(this).attr('program');
+
+		for (var _value_ in data)
+			if(data[_value_] == ''){
+				alert("No puede añadir el curso, faltan datos");
+				return;
+			}
+
+		var tablespace = $(this).attr('tablespace');
+		var self = this;
+		
+		$.post(apiURL + 'save_course', data, function(response, textStatus, xhr) {
+			//-- Success
+			var query = new Object();
+			$.each(response.split('&'), function(index, val) {
+				var sub_data = val.split('=');
+				query[sub_data[0]] = sub_data[1];
+			});
+			var message = '';
+			if (query.status == "True")
+				message = '<div id="course_message" class="alert alert-success" style="margin-top:3%;"><strong>Éxito!</strong> Curso registrado exitosamente.</div>';
+			else
+				message = '<div id="course_message" class="alert alert-danger" style="margin-top:3%;"><strong>Error!</strong> El curso no se registró correctamente.</div>';
+
+			var td1 = '<td>'+data.course_code+'</td>';
+			var td2 = '<td>'+data.course_name+'</td>';
+			var td3 = '<td><button class="btn btn-default">Añadir Unidad</button><button class="btn btn-danger">Remover Curso</button></td>';
+			$(tablespace).append('<tr class="info">'+td1+td2+td3+'</tr>');
+			$(self).append(message);
+			setTimeout(function() {
+				$('#course_message').remove();
+				$('tr').removeClass('info');
+			}, 4000);
+		});
+	});
+});
+</script>

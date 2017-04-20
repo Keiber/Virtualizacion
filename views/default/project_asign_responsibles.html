@@ -1,0 +1,66 @@
+{{extend 'layout.html'}}
+<!--List courses, select responsibles, and done-->
+<section id="project_asign_responsibles">
+	<div class="container">
+		<strong><h5>Lista de cursos a asignar responsable:</h5></strong>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th class="col-md-4">Codigo</th>
+					<th class="col-md-4">Nombre</th>
+					<th class="col-md-4">Responsable</th>
+				</tr>
+			</thead>
+			<tbody id="main_table">
+				{{for course in courses_:}}
+				<tr>
+					<td class="col-md-4">{{=course[0].f_code}}</td>
+					<td class="col-md-4">{{=course[0].f_name}}</td>
+					<td class="col-md-4">
+						<select class="course_resp_data" name="course-{{course[0].f_code}}" id="course-{{course[0].f_code}}"></select>
+					</td>
+				</tr>
+				{{pass}}
+			</tbody>
+		</table>
+		<button id="finalizar" class="btn btn-default">Finalizar</button>
+	</div>
+
+</section>
+
+<script>
+var restAPI = '/Virtualizacion/rest/';
+var baseURI = '/Virtualizacion/default/';
+
+jQuery(document).ready(function($) {
+	$.get(restAPI+'get_users.json', function(response) {
+		/*optional stuff to do after success */
+		$.each(response.data, function(index, value) {
+			 /* iterate through array or object */
+			 var name = value.first_name + " " +value.last_name;
+			 var option = $('<option>');
+			 option.val(value.id);
+			 option.text(name);
+			 $('.course_resp_data').append(option);
+		});
+	});
+
+	$("#finalizar").on('click', function(event) {
+		event.preventDefault();
+		/* Act on the event */
+
+		$.each($("#main_table").children(), function(index, value) {
+			 /* iterate through array or object */
+			 var tds = $(value).children();
+			 var data = {
+			 	codigo: $(tds[0]).text(),
+			 	nombre: $(tds[1]).text(),
+			 	responsable: $($(tds[2]).children('select')[0]).val()
+			 };
+			 console.log(data);
+
+			 //-- send post, and you are done
+		});
+	});
+});
+</script>
