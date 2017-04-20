@@ -180,7 +180,8 @@
                             <div class="panel-body">
                                 <div class="list-group">
                                     {{ for i in range(length_notification):}}                                     
-                                         <a id="notification_{{=i+1}}" href="#" onclick="ver_notificacion(this)" notification="{{=notification[i]}}" class="list-group-item">
+                                         <a id="notification_{{=i+1}}" href="#" onclick="ver_notificacion(this)" notification="{{=notification[i]}}" class="list-group-item" >
+                                           <!-- <h1> {{=notification_emited[i]}}</h1> -->
                                             <i class="glyphicon glyphicon-envelope"></i> {{=notification[i].f_tittle}}
                                             <span class="pull-right text-muted small"><em>{{=notification[i].created_on.date().strftime('%d-%m-%Y')}}</em>
                                             </span>
@@ -250,7 +251,9 @@
         $("#programa").css("visibility", "hidden");
         $("#notificacion_view").css("visibility", "visible");
         var not = argument.id;
+        var user = $("#" +not).attr("user");
         var notif = $("#"+not).attr("notification");
+        console.log(user);
         var array = row_to_json(notif);
         $("#notificacion_dynamic").remove();
         $("#panel_notification").append("<div id='notificacion_dynamic'></div>");

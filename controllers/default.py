@@ -20,9 +20,11 @@ def index():
     for row in res:
         res_n=res_n+1
     notificacion = db(db.t_notification.f_usuario_b == auth.user.id).select()
+    usuarios = []
     for row in notificacion:
+        usuarios.append( db(db.t_usuario.id == row.f_usuario_a).select(db.t_usuario.f_first_name, distinct=False) )
         n=n+1
-    return dict(query=res, length_query = res_n, notification = notificacion, length_notification = n)
+    return dict(query=res, length_query = res_n, notification = notificacion, length_notification = n, notification_emited = usuarios)
 
 def error():
     return dict()
