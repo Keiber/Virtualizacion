@@ -485,6 +485,7 @@
 'View': 'Vista',
 'view': 'vista',
 'View %(entity)s': 'Ver %(entity)s',
+'Viewed': 'Viewed',
 'Views': 'Vistas',
 'views': 'vistas',
 'web2py is up to date': 'web2py está actualizado',

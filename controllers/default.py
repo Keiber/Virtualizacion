@@ -10,6 +10,10 @@ def call(): return service()
 ### end requires
 @auth.requires_login()
 def index():
+    # id = auth.id  -> res = db(db.t_usuario.id == id ).select() -> res.f_type
+    #if es instruccional renderizar vista de instruccional ...
+    #return 
+
     res = db(db.t_program).select()
     n = 0
     res_n = 0
