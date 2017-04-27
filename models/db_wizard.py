@@ -221,3 +221,18 @@ db.define_table('t_activity',
     migrate=settings.migrate)
 
 db.define_table('t_activity_archive',db.t_activity,Field('current_record','reference t_activity',readable=False,writable=False))
+
+############################################ COMENTARIOS RECURSOS
+
+db.define_table('t_comments',
+    Field('recurso', type='reference t_resource',
+          label=T('Recurso')),
+    # Field('curso', type='reference t_course',
+    #       label=T('Curso')),
+    Field('texto', type='text',
+          label=T('Texto')),
+    auth.signature,
+    format='%(f_name)s',
+    migrate=settings.migrate)
+
+db.define_table('t_comments_archive',db.t_activity,Field('current_record','reference t_comments',readable=False,writable=False))
