@@ -178,7 +178,29 @@ p51
 sg19
 I00
 sg20
+<<<<<<< HEAD
 g48
+=======
+S'string'
+p47
+ssS'f_usuario_a'
+p48
+(dp49
+g4
+L2L
+sg5
+S'INTEGER'
+p50
+sg7
+L512L
+sg8
+L0L
+sg9
+L0L
+sg10
+S'integer'
+p51
+>>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 ssS'f_viewed'
 p52
 (dp53
