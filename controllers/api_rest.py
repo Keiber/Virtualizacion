@@ -2,10 +2,10 @@
 def api():
 
     def GET(*args, **vars):
-        return vars
+        return dict(nombre = 'Moisés')
 
     def POST(*args, **vars):
-        return dict()
+        return dict(nombre = 'Moisés')
 
     def PUT(*args, **vars):
         return dict()
