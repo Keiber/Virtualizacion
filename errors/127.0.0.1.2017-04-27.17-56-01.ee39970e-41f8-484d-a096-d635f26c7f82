@@ -1,0 +1,447 @@
+(dp1
+S'output'
+p2
+S"<type 'exceptions.AttributeError'> 'NoneType' object has no attribute 'update_record'"
+p3
+sS'layer'
+p4
+S'C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\applications\\Virtualizacion\\controllers/default.py'
+p5
+sS'code'
+p6
+S'# -*- coding: utf-8 -*-\n### required - do no delete\n# Some imports\nfrom time import gmtime, strftime\nimport json\n\ndef user(): return dict(form=auth())\ndef download(): return response.download(request,db)\ndef call(): return service()\n### end requires\n@auth.requires_login()\ndef index():\n    # id = auth.id  -> res = db(db.t_usuario.id == id ).select() -> res.f_type\n    #if es instruccional renderizar vista de instruccional ...\n    #return \n\n    res = db(db.t_program).select()\n    n = 0\n    res_n = 0\n    for row in res:\n        res_n=res_n+1\n    notificacion = db(db.t_notification.f_usuario_b == auth.user.id).select()\n    usuarios = []\n    for row in notificacion:\n        usuarios.append( db(db.t_usuario.id == row.f_usuario_a).select(db.t_usuario.f_first_name, distinct=False) )\n        n=n+1\n\n    usuarios_sistema = db(db.t_usuario).select()\n\n    return dict(query=res, length_query = res_n, notification = notificacion, length_notification = n, notification_emited = usuarios, users = usuarios_sistema, length_users = len(usuarios_sistema))\n\ndef error():\n    return dict()\n\n\n@auth.requires_login()\ndef create_notif():\n    user_emisor, user_receptor, titulo, contenido = auth.user.id, request.post_vars[\'user_receptor\'], request.post_vars[\'titulo\'], request.post_vars[\'contenido\']\n    select = db(db.t_usuario.f_first_name == user_receptor).select()\n    id_receptor = 0\n    for row in select:\n        id_receptor = row.id\n    db.t_notification.insert(\n        f_usuario_a = user_emisor,\n        f_usuario_b = id_receptor,\n        f_tittle = titulo,\n        f_viewed = False,\n        f_content = contenido\n        )    \n    return index()\n\n@auth.requires_login()\ndef insert():\n    user_name, name, last_name, user_type, email, password = request.post_vars[\'user_name\'],request.post_vars[\'name\'], request.post_vars[\'last_name\'], request.post_vars[\'user_type\'], request.post_vars[\'email\'], request.post_vars[\'password\']\n    db.t_usuario.insert(\n            f_username=user_name,\n            f_first_name=name,\n            f_last_name=last_name,           \n            f_email=email,\n            f_password=db.auth_user.password.requires[0](password)[0],\n            f_type_user=user_type,\n            f_notification="0"\n        )\n    db.auth_user.insert(\n            first_name=name,\n            last_name=last_name,           \n            email=email,\n            password=db.auth_user.password.requires[0](password)[0],           \n        )\n    return dict() \n\n@auth.requires_login()\ndef registrar_usuario():\n    return dict()\n\n@auth.requires_login()\ndef user_manage():\n    return dict()\n\n@auth.requires_login()\ndef course_manage():\n    form = SQLFORM.smartgrid(db.t_course,onupdate=auth.archive)\n    return locals()\n\n@auth.requires_login()\ndef has_course_manage():\n    form = SQLFORM.smartgrid(db.t_has_course,onupdate=auth.archive)\n    return locals()\n\n@auth.requires_login()\ndef register_user():\n    return dict()\n\n@auth.requires_login()\ndef dashboard():\n    return dict()\n\n@auth.requires_login()\ndef validar_form_recurso(form):\n    c = form.vars.f_name\n    t = form.vars.f_type\n    f = form.vars.f_format\n    d = form.vars.f_description\n    c = c.strip()\n    t = t.strip()\n    f = f.strip()\n    d = d.strip()\n    if c=="" or t=="" or f=="" or d=="":\n        form.errors.f_name = \'todos los campos deben estar llenos\'\n        form.errors.f_type = \'todos los campos deben estar llenos\'\n        form.errors.f_format = \'todos los campos deben estar llenos\'\n        form.errors.f_description = \'todos los campos deben estar llenos\'\n\n@auth.requires_login()\ndef validar_form_archivo(form):\n    c = form.vars.f_name\n    d = form.vars.f_description\n    a = form.vars.f_file\n    c = c.strip()\n    d = d.strip()\n    a = a.strip()\n    if c=="" or d=="" or a=="":\n        form.errors.f_name = \'todos los campos deben estar llenos\'\n        form.errors.f_description = \'todos los campos deben estar llenos\'\n        #form.vars.f_file = \'todos los campos deben estar llenos\'\n\n@auth.requires_login()\ndef recurso():\n    #form =db().select(db.t_resource.f_name, db.t_resource.f_code_course)\n    form = SQLFORM(\n        db.t_resource,\n        fields=[\'f_name\',\'f_code_course\',\'f_responsable\',\'f_type\',\'f_format\',\'f_description\',\'f_is_planilla\'],\n        deletable=True)\n    if form.process(onvalidation=validar_form_recurso).accepted:\n        response.flash = \'Recurso aceptado\'\n    elif form.errors:\n        response.flash = \'Error de formulario\'\n    return dict(form=form)\n\n@auth.requires_login()\ndef display_planillas():\n    form = SQLFORM.smartgrid(db.t_resource, constraints = dict(t_resource = db.t_resource.f_is_planilla == True),\n        onupdate=auth.archive,\n        deletable=False,\n        editable=False,\n        searchable=False,\n        create=False,\n        csv=False,\n        showbuttontext=False)\n    return locals()\n\n\n\n@auth.requires_login()\ndef display_resources():\n    query = db.t_resource.f_is_planilla == False\n    form = SQLFORM.smartgrid(\n        db.t_resource,\n        constraints = dict(t_resource = query),\n        onupdate=auth.archive,\n        deletable=False,\n        editable=False,\n        searchable=False,\n        create=False,\n        csv=False,\n        showbuttontext=False\n        )\n    return locals()\n\n\n@auth.requires_login()\ndef verificar_planillas():\n    id_resource = request.post_vars[\'id_resource\']\n    row = db(db.t_resource.id == id_resource).select().first()\n    row.update_record(f_is_verificado=True)\n    redirect(URL(\'display_planillas\'))  \n    #return locals()\n\n@auth.requires_login()\ndef verificar_resources():\n    id_resource = request.post_vars[\'id_resource\']\n    row = db(db.t_resource.id == id_resource).select().first()\n    row.update_record(f_is_verificado=True)\n    redirect(URL(\'display_resources\'))  \n    #return locals()\n\n@auth.requires_login()\ndef desverificar_resources():\n    id_resource = request.post_vars[\'id_resource\']\n    row = db(db.t_resource.id == id_resource).select().first()\n    row.update_record(f_is_verificado=False)\n    redirect(URL(\'display_resources\'))  \n    #return locals()\n\n\ndef display_file_form():\n    record = db.t_file(request.args(0))\n    form = SQLFORM(db.t_file, record, deletable=True,\n                  upload=URL(\'download\'))\n\n    if form.process(onvalidation=validar_form_archivo).accepted:\n       response.flash = \'form accepted\'\n    elif form.errors:\n       response.flash = \'form has errors\'\n    return dict(form=form)\n\ndef display_files():\n    form = SQLFORM.smartgrid(db.t_file,onupdate=auth.archive)\n    return locals()\n    \n@auth.requires_login()\ndef program_manage():\n    return dict()\n\n@auth.requires_login()\ndef program_creator():\n    program_type = request.post_vars[\'program_type\']\n    program_name = ""\n\n    if (program_type == "carreraLarga"):\n        program_name = "Carrera Larga"\n    elif (program_type == "carreraCorta"):\n        program_name = "Carrera Corta"\n    elif (program_type == "postgrado"):\n        program_name = "Postgrado"\n    elif (program_type == "diplomado"):\n        program_name = "Diplomado"\n    elif (program_type == "curso"):\n        program_name = "Curso"\n    elif (program_type == "programa"):\n        program_name = "Programa"\n\n    data = {\'program_type\': program_type, \'program_name\': program_name}\n    return data\n\n@auth.requires_login()\ndef program_creator_courses():\n    program_type = request.get_vars[\'type\']\n    duration = int(request.post_vars[\'years\'])\n    modality = request.post_vars[\'modality\']\n    name = request.post_vars[\'name\']\n    code = request.post_vars[\'code\']\n\n   # nulo = db(db.t_course.f_code == code).select()\n   # if nulo:\n\n   # print(nulo)\n   # print("HOLA")\n\n    # Getting size\n    size = 0\n    if (modality==\'trimestral\'):\n        size = 3\n    elif (modality==\'semestral\'):\n        size = 6\n    elif (modality==\'anual\'):\n        size = 12\n\n    # Create Database Entries\n    if (program_type in (\'carreraLarga\', \'carreraCorta\', \'postgrado\')):\n        # Nivel de anidacion I\n        level_one_id = db.t_program.insert(\n            f_name = name,\n            f_modality = modality,\n            f_code = code,\n            f_duration = duration,\n            f_level = 0\n        )\n\n        complete_duration = int(duration)*12/size\n\n        programsIDs = list()\n\n        for i in range(0, complete_duration):\n            level_two_id = db.t_program.insert(\n                f_name = name + \' - \' + modality + \' - \' + str(i),\n                f_modality = None,\n                f_code = code,\n                f_duration = size,\n                f_level = 1\n            )\n\n            db.t_has_program.insert(\n                f_program_a = level_one_id,\n                f_program_b = level_two_id\n            )\n\n            programsIDs.append(level_two_id)\n    elif (program_type in (\'diplomado\', \'curso\') ):\n        complete_duration = int(duration)*12/size\n\n        # Nivel de anidacion 0 \n        level_one_id = db.t_program.insert(\n            f_name = name,\n            f_modality = modality,\n            f_code = code,\n            f_duration = duration\n        )\n        programsIDs.append(level_one_id)\n    elif (program_type == \'programa\'):\n        # Nivel de anidacion variable\n        complete_duration = int(duration)*12/size\n        pass\n\n    return {\'duration\': complete_duration, \'size\': size, \'modality\' : modality, \'programs\': programsIDs}\n\n@auth.requires_login()\ndef save_course():\n    program = request.post_vars[\'program\']\n    course_code = request.post_vars[\'course_code\']\n    course_name = request.post_vars[\'course_name\']\n    message = \'\'\n    status = False\n    \n    # DB Inserts\n    validate = False\n    sanity_check_course = db(db.t_course.f_code == course_code).select()\n\n    for row in sanity_check_course:\n        validate = True\n\n    if ( not validate ):\n        print("This case is triggered")\n        course = db.t_course.insert(\n            f_code = course_code,\n            f_name = course_name,\n        )\n    else:\n        course = sanity_check_course[0]\n\n    has_course = db.t_has_course.insert(\n        f_program_has = program,\n        f_course_has = course\n    );\n\n    status = has_course != None and course != None\n\n    data = {\'course\': course, \'has_course\': has_course, \'course_name\': course_name, \'status\': status}\n    return data\n\n\n@auth.requires_login()\ndef project_manage():\n    return dict()\n\n\n@auth.requires_login()\ndef project_asign_responsibles():\n    codigo = request.get_vars[\'codigo\']\n    data = list()\n    courses = db(db.t_has_course.f_program_has.belongs(db.t_program.f_code == codigo)).select()\n    for course in courses:\n        data.append(db(db.t_course.id == course.f_course_has).select())\n    return dict(courses_ = data)\n\n\n@auth.requires_login()\ndef get_user_names():\n    usernames = db(db.auth_user).select(db.auth_user.first_name, db.auth_user.last_name)\n    names = \'\';\n    for name in usernames:\n        names = names + str(name[\'auth_user.first_name\']) + \' \' + str(name[\'auth_user.last_name\']) + \'|\'\n    data = {\'usernames\': names}\n    return data\n\n@auth.requires_login()\ndef profesor():\n    return dict()\n\n@auth.requires_login()\ndef disenador():\n    return dict()\n\n\n\nresponse._vars=response._caller(desverificar_resources)\n'
+p7
+sS'snapshot'
+p8
+(dp9
+S'exception'
+p10
+(dp11
+S'__hash__'
+p12
+S"<method-wrapper '__hash__' of exceptions.AttributeError object>"
+p13
+sS'__setattr__'
+p14
+S"<method-wrapper '__setattr__' of exceptions.AttributeError object>"
+p15
+sS'__reduce_ex__'
+p16
+S'<built-in method __reduce_ex__ of exceptions.AttributeError object>'
+p17
+sS'__getslice__'
+p18
+S"<method-wrapper '__getslice__' of exceptions.AttributeError object>"
+p19
+sS'__getitem__'
+p20
+S"<method-wrapper '__getitem__' of exceptions.AttributeError object>"
+p21
+sS'__setstate__'
+p22
+S'<built-in method __setstate__ of exceptions.AttributeError object>'
+p23
+sS'__reduce__'
+p24
+S'<built-in method __reduce__ of exceptions.AttributeError object>'
+p25
+sS'__str__'
+p26
+S"<method-wrapper '__str__' of exceptions.AttributeError object>"
+p27
+sS'__format__'
+p28
+S'<built-in method __format__ of exceptions.AttributeError object>'
+p29
+sS'__getattribute__'
+p30
+S"<method-wrapper '__getattribute__' of exceptions.AttributeError object>"
+p31
+sS'__class__'
+p32
+S"<type 'exceptions.AttributeError'>"
+p33
+sS'__unicode__'
+p34
+S'<built-in method __unicode__ of exceptions.AttributeError object>'
+p35
+sS'__delattr__'
+p36
+S"<method-wrapper '__delattr__' of exceptions.AttributeError object>"
+p37
+sS'__subclasshook__'
+p38
+S'<built-in method __subclasshook__ of type object>'
+p39
+sS'__repr__'
+p40
+S"<method-wrapper '__repr__' of exceptions.AttributeError object>"
+p41
+sS'args'
+p42
+S'("\'NoneType\' object has no attribute \'update_record\'",)'
+p43
+sS'__dict__'
+p44
+S'{}'
+p45
+sS'__sizeof__'
+p46
+S'<built-in method __sizeof__ of exceptions.AttributeError object>'
+p47
+sS'__doc__'
+p48
+S"'Attribute not found.'"
+p49
+sS'__init__'
+p50
+S"<method-wrapper '__init__' of exceptions.AttributeError object>"
+p51
+sS'__new__'
+p52
+S'<built-in method __new__ of type object>'
+p53
+ssS'evalue'
+p54
+S"'NoneType' object has no attribute 'update_record'"
+p55
+sS'request'
+p56
+cgluon.html
+XML_unpickle
+p57
+(S's*o\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">ajax</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">application</td><td style="vertical-align:top;">:</td><td><div>Virtualizacion</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cid</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">client</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">controller</td><td style="vertical-align:top;">:</td><td><div>default</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_admin</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-45a26ee5-4758-481b-9ddf-81503cae3715<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_virtualizacion</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-7c35ab5f-defc-4ffc-809e-b20df98d2fd6<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_virtualizacion_1</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-88fb9f5e-8efd-4417-8158-80e56b46363c<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_welcome</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-70492ff8-2d7e-46db-ae00-f7ca1060c283<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">env</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">CONTENT_LENGTH</td><td style="vertical-align:top;">:</td><td><div>12</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">CONTENT_TYPE</td><td style="vertical-align:top;">:</td><td><div>application/x-www-form-urlencoded</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT</td><td style="vertical-align:top;">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_ENCODING</td><td style="vertical-align:top;">:</td><td><div>gzip, deflate, br</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_LANGUAGE</td><td style="vertical-align:top;">:</td><td><div>es,en-US;q=0.8,en;q=0.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CACHE_CONTROL</td><td style="vertical-align:top;">:</td><td><div>max-age=0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CONNECTION</td><td style="vertical-align:top;">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CONTENT_LENGTH</td><td style="vertical-align:top;">:</td><td><div>12</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CONTENT_TYPE</td><td style="vertical-align:top;">:</td><td><div>application/x-www-form-urlencoded</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_COOKIE</td><td style="vertical-align:top;">:</td><td><div>session_id_welcome=127.0.0.1-70492ff8-2d7e-46db-ae00-f7ca1060c283; session_id_virtualizacion_1=127.0.0.1-88fb9f5e-8efd-4417-8158-80e56b46363c; session_id_admin=127.0.0.1-45a26ee5-4758-481b-9ddf-81503cae3715; session_id_virtualizacion=127.0.0.1-7c35ab5f-defc-4ffc-809e-b20df98d2fd6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_HOST</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ORIGIN</td><td style="vertical-align:top;">:</td><td><div>http://127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_REFERER</td><td style="vertical-align:top;">:</td><td><div>http://127.0.0.1:8000/Virtualizacion/default/display_resources</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_UPGRADE_INSECURE_REQUESTS</td><td style="vertical-align:top;">:</td><td><div>1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_USER_AGENT</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">PATH_INFO</td><td style="vertical-align:top;">:</td><td><div>/Virtualizacion/default/desverificar_resources</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">QUERY_STRING</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_ADDR</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_PORT</td><td style="vertical-align:top;">:</td><td><div>60536</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REQUEST_METHOD</td><td style="vertical-align:top;">:</td><td><div>POST</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SCRIPT_NAME</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_NAME</td><td style="vertical-align:top;">:</td><td><div>Uriel</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PORT</td><td style="vertical-align:top;">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PROTOCOL</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_SOFTWARE</td><td style="vertical-align:top;">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;C:\\\\Users\\\\user\\\\Documents\\\\universidad\\\\desarrollo de software\\\\web2py\\\\applications\\\\Virtualizacion\\\\&#x27;, &#x27;C:\\\\Users\\\\user\\\\Documents\\\\universidad\\\\desarrollo de software\\\\web2py\\\\applications\\\\Virtualizacion_1\\\\&#x27;, &#x27;C:\\\\Users\\\\user\\\\Documents\\\\universidad\\\\desarrollo de software\\\\web2py\\\\applications\\\\welcome\\\\&#x27;, &#x27;C:\\\\Users\\\\user\\\\Documents\\\\universidad\\\\desarrollo de software\\\\web2py\\\\applications\\\\admin\\\\&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_options</td><td style="vertical-align:top;">:</td><td><div>&lt;Values at 0x314ec88: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;with_scheduler&#x27;: False, &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;with_coverage&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;Uriel&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;port&#x27;: 8000, &#x27;print_errors&#x27;: False, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;C:\\\\Users\\\\user\\\\Documents\\\\universidad\\\\desarrollo de software\\\\web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;minthreads&#x27;: None, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;profiler_dir&#x27;: None, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;interfaces&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;gae&#x27;: None, &#x27;password&#x27;: &#x27;******&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;import_models&#x27;: False, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">content_length</td><td style="vertical-align:top;">:</td><td><div>12</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">content_type</td><td style="vertical-align:top;">:</td><td><div>application/x-www-form-urlencoded</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept</td><td style="vertical-align:top;">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_encoding</td><td style="vertical-align:top;">:</td><td><div>gzip, deflate, br</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_language</td><td style="vertical-align:top;">:</td><td><div>es,en-US;q=0.8,en;q=0.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_cache_control</td><td style="vertical-align:top;">:</td><td><div>max-age=0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_connection</td><td style="vertical-align:top;">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_content_length</td><td style="vertical-align:top;">:</td><td><div>12</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_content_type</td><td style="vertical-align:top;">:</td><td><div>application/x-www-form-urlencoded</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_cookie</td><td style="vertical-align:top;">:</td><td><div>session_id_welcome=127.0.0.1-70492ff8-2d7e-46db-ae00-f7ca1060c283; session_id_virtualizacion_1=127.0.0.1-88fb9f5e-8efd-4417-8158-80e56b46363c; session_id_admin=127.0.0.1-45a26ee5-4758-481b-9ddf-81503cae3715; session_id_virtualizacion=127.0.0.1-7c35ab5f-defc-4ffc-809e-b20df98d2fd6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_host</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_origin</td><td style="vertical-align:top;">:</td><td><div>http://127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_referer</td><td style="vertical-align:top;">:</td><td><div>http://127.0.0.1:8000/Virtualizacion/default/display_resources</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_upgrade_insecure_requests</td><td style="vertical-align:top;">:</td><td><div>1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_user_agent</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>fe80::548d:31a:7304:a982%31</div></td></tr><tr><td><div>fe80::f43e:57be:b8fd:2bb0%30</div></td></tr><tr><td><div>192.168.75.1</div></td></tr><tr><td><div>2620:9b::190c:282d</div></td></tr><tr><td><div>2001:0:9d38:953c:1cfa:a45:3f57:fefd</div></td></tr><tr><td><div>fe80::1cfa:a45:3f57:fefd%26</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>fe80::1146:83f2:5ef1:25a8%27</div></td></tr><tr><td><div>192.168.1.2</div></td></tr><tr><td><div>Uriel</div></td></tr><tr><td><div>127.0.0.1</div></td></tr><tr><td><div>192.168.56.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path_info</td><td style="vertical-align:top;">:</td><td><div>/Virtualizacion/default/desverificar_resources</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">query_string</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_addr</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_port</td><td style="vertical-align:top;">:</td><td><div>60536</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_method</td><td style="vertical-align:top;">:</td><td><div>POST</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_uri</td><td style="vertical-align:top;">:</td><td><div>/Virtualizacion/default/desverificar_resources</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">script_name</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_name</td><td style="vertical-align:top;">:</td><td><div>Uriel</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_port</td><td style="vertical-align:top;">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_protocol</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_software</td><td style="vertical-align:top;">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_path</td><td style="vertical-align:top;">:</td><td><div>C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.14.6-stable+timestamp.2016.05.10.00.21.47</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.errors</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0x01E6D0D0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x0381B030&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.input</td><td style="vertical-align:top;">:</td><td><div>&lt;socket._fileobject object at 0x09496470&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multiprocess</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multithread</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.url_scheme</td><td style="vertical-align:top;">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_errors</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0x01E6D0D0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x0381B030&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_input</td><td style="vertical-align:top;">:</td><td><div>&lt;socket._fileobject object at 0x09496470&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multiprocess</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multithread</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_url_scheme</td><td style="vertical-align:top;">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">extension</td><td style="vertical-align:top;">:</td><td><div>html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">folder</td><td style="vertical-align:top;">:</td><td><div>C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\applications\\Virtualizacion\\</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">function</td><td style="vertical-align:top;">:</td><td><div>desverificar_resources</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">global_settings</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;C:\\\\Users\\\\user\\\\Documents\\\\universidad\\\\desarrollo de software\\\\web2py\\\\applications\\\\Virtualizacion\\\\&#x27;, &#x27;C:\\\\Users\\\\user\\\\Documents\\\\universidad\\\\desarrollo de software\\\\web2py\\\\applications\\\\Virtualizacion_1\\\\&#x27;, &#x27;C:\\\\Users\\\\user\\\\Documents\\\\universidad\\\\desarrollo de software\\\\web2py\\\\applications\\\\welcome\\\\&#x27;, &#x27;C:\\\\Users\\\\user\\\\Documents\\\\universidad\\\\desarrollo de software\\\\web2py\\\\applications\\\\admin\\\\&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_options</td><td style="vertical-align:top;">:</td><td><div>&lt;Values at 0x314ec88: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;with_scheduler&#x27;: False, &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;with_coverage&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;Uriel&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;port&#x27;: 8000, &#x27;print_errors&#x27;: False, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;C:\\\\Users\\\\user\\\\Documents\\\\universidad\\\\desarrollo de software\\\\web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;minthreads&#x27;: None, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;profiler_dir&#x27;: None, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;interfaces&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;gae&#x27;: None, &#x27;password&#x27;: &#x27;******&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;import_models&#x27;: False, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>fe80::548d:31a:7304:a982%31</div></td></tr><tr><td><div>fe80::f43e:57be:b8fd:2bb0%30</div></td></tr><tr><td><div>192.168.75.1</div></td></tr><tr><td><div>2620:9b::190c:282d</div></td></tr><tr><td><div>2001:0:9d38:953c:1cfa:a45:3f57:fefd</div></td></tr><tr><td><div>fe80::1cfa:a45:3f57:fefd%26</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>fe80::1146:83f2:5ef1:25a8%27</div></td></tr><tr><td><div>192.168.1.2</div></td></tr><tr><td><div>Uriel</div></td></tr><tr><td><div>127.0.0.1</div></td></tr><tr><td><div>192.168.56.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.14.6-stable+timestamp.2016.05.10.00.21.47</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_https</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_local</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_restful</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_scheduler</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_shell</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">now</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2017, 4, 27, 17, 56, 1, 39000)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_args</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_extension</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">url</td><td style="vertical-align:top;">:</td><td><div>/Virtualizacion/default/desverificar_resources</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">utcnow</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2017, 4, 27, 21, 56, 1, 39000)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi</td><td style="vertical-align:top;">:</td><td><div>&lt;gluon.main.LazyWSGI object at 0x0A5C8F90&gt;</div></td></tr></table></div>'
+tRp58
+sS'frames'
+p59
+(lp60
+(dp61
+S'file'
+p62
+S'C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\gluon\\restricted.py'
+p63
+sS'dump'
+p64
+(dp65
+S'environment'
+p66
+S"{'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'ASSIGNJS': <function ASSIGNJS>, 'AppConfig': <function AppConfig>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, ...}"
+p67
+sS'ccode'
+p68
+S'<code object <module> at 08B757B8, file "C:\\User...s\\Virtualizacion\\controllers/default.py", line 4>'
+p69
+ssS'lnum'
+p70
+I227
+sS'lines'
+p71
+(dp72
+I224
+S'            ccode = code'
+p73
+sI225
+S'        else:'
+p74
+sI226
+S'            ccode = compile2(code, layer)'
+p75
+sI227
+S'        exec ccode in environment'
+p76
+sI228
+S'    except HTTP:'
+p77
+sI229
+S'        raise'
+p78
+sI230
+S'    except RestrictedError:'
+p79
+sI231
+S'        # do not encapsulate (obfuscate) the original RestrictedError'
+p80
+sI222
+S'    try:'
+p81
+sI223
+S'        if isinstance(code, types.CodeType):'
+p82
+ssS'call'
+p83
+S"(code='# -*- coding: utf-8 -*-\\n### required - do no del...e._vars=response._caller(desverificar_resources)\\n', environment={'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'ASSIGNJS': <function ASSIGNJS>, 'AppConfig': <function AppConfig>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, ...}, layer=r'C:\\Users\\user\\Documents\\universidad\\desarrollo d...pplications\\Virtualizacion\\controllers/default.py')"
+p84
+sS'func'
+p85
+S'restricted'
+p86
+sa(dp87
+g62
+S'C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\applications\\Virtualizacion\\controllers\\default.py'
+p88
+sg64
+(dp89
+S'response'
+p90
+S"<Storage {'body': <cStringIO.StringO object at 0..., 'view': 'default/desverificar_resources.html'}>"
+p91
+sS'response.flash'
+p92
+S"''"
+p93
+ssg70
+I376
+sg71
+(dp94
+I365
+S''
+sI366
+S'@auth.requires_login()'
+p95
+sI367
+S'def profesor():'
+p96
+sI368
+S'    return dict()'
+p97
+sI369
+S''
+sI370
+S'@auth.requires_login()'
+p98
+sI371
+S'def disenador():'
+p99
+sI372
+S'    return dict()'
+p100
+sI373
+S''
+sI374
+S''
+ssg83
+S'()'
+p101
+sg85
+S'<module>'
+p102
+sa(dp103
+g62
+S'C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\gluon\\globals.py'
+p104
+sg64
+(dp105
+S'self'
+p106
+S'undefined'
+p107
+sS'f'
+S'<function desverificar_resources>'
+p108
+ssg70
+I417
+sg71
+(dp109
+I416
+S'        self._vars = None'
+p110
+sI417
+S'        self._caller = lambda f: f()'
+p111
+sI418
+S'        self._view_environment = None'
+p112
+sI419
+S'        self._custom_commit = None'
+p113
+sI420
+S'        self._custom_rollback = None'
+p114
+sI421
+S"        self.generic_patterns = ['*']"
+p115
+sI412
+S"        self.flash = ''            # used by the default view layout"
+p116
+sI413
+S'        self.meta = Storage()      # used by web2py_ajax.html'
+p117
+sI414
+S'        self.menu = []             # used by the default view layout'
+p118
+sI415
+S'        self.files = []            # used by web2py_ajax.html'
+p119
+ssg83
+S'(f=<function desverificar_resources>)'
+p120
+sg85
+S'<lambda>'
+p121
+sa(dp122
+g62
+S'C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\gluon\\tools.py'
+p123
+sg64
+(dp124
+S'action'
+p125
+S'<function desverificar_resources>'
+p126
+sS'a'
+S'()'
+p127
+sS'b'
+g45
+ssg70
+I4241
+sg71
+(dp128
+I4236
+S'                    flag = condition'
+p129
+sI4237
+S'                if not flag:'
+p130
+sI4238
+S'                    current.session.flash = self.messages.access_denied'
+p131
+sI4239
+S'                    return call_or_redirect('
+p132
+sI4240
+S'                        self.settings.on_failed_authorization)'
+p133
+sI4241
+S'                return action(*a, **b)'
+p134
+sI4242
+S'            f.__doc__ = action.__doc__'
+p135
+sI4243
+S'            f.__name__ = action.__name__'
+p136
+sI4244
+S'            f.__dict__.update(action.__dict__)'
+p137
+sI4245
+S'            return f'
+p138
+ssg83
+S'(*a=(), **b={})'
+p139
+sg85
+S'f'
+sa(dp140
+g62
+S'C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\applications\\Virtualizacion\\controllers\\default.py'
+p141
+sg64
+(dp142
+S'form'
+p143
+g107
+sS'db.t_file'
+p144
+S'<Table t_file (id, f_name, f_code_resource, f_de...reated_on, created_by, modified_on, modified_by)>'
+p145
+sS'global SQLFORM'
+p146
+S"<class 'gluon.sqlhtml.SQLFORM'>"
+p147
+sS'builtinTrue'
+p148
+S'True'
+p149
+sS'upload'
+p150
+g107
+sS'global URL'
+p151
+S'<function URL>'
+p152
+sS'record'
+p153
+g107
+sS'deletable'
+p154
+g107
+sS'global db'
+p155
+S'<DAL uri="sqlite://storage.sqlite">'
+p156
+ssg70
+I191
+sg71
+(dp157
+I192
+S"    redirect(URL('display_resources'))"
+p158
+sI193
+S'    #return locals()'
+p159
+sI194
+S''
+sI195
+S''
+sI186
+S''
+sI187
+S'@auth.requires_login()'
+p160
+sI188
+S'def desverificar_resources():'
+p161
+sI189
+S"    id_resource = request.post_vars['id_resource']"
+p162
+sI190
+S'    row = db(db.t_resource.id == id_resource).select().first()'
+p163
+sI191
+S'    row.update_record(f_is_verificado=False)'
+p164
+ssg83
+S'()'
+p165
+sg85
+S'desverificar_resources'
+p166
+sasS'pyver'
+p167
+S'Python 2.7.9: C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\web2py.exe (prefix: )'
+p168
+sS'session'
+p169
+g57
+(S's\xe5\x08\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">auth</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">expiration</td><td style="vertical-align:top;">:</td><td><div>3600</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">hmac_key</td><td style="vertical-align:top;">:</td><td><div>ae774ca0-f63a-4c67-862d-5a51f5e549f9</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_visit</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2017, 4, 27, 17, 55, 33, 505000)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remember_me</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">user</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">email</td><td style="vertical-align:top;">:</td><td><div>yolo@gmail.com</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">first_name</td><td style="vertical-align:top;">:</td><td><div>yolo</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">id</td><td style="vertical-align:top;">:</td><td><div>17L</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_name</td><td style="vertical-align:top;">:</td><td><div>yolo</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">registration_id</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">registration_key</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">reset_password_key</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">user_groups</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">3</td><td style="vertical-align:top;">:</td><td><div>user_17</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">flash</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr></table></div>'
+tRp170
+sS'etype'
+p171
+S"<type 'exceptions.AttributeError'>"
+p172
+sS'date'
+p173
+S'Thu Apr 27 17:56:01 2017'
+p174
+sS'response'
+p175
+g57
+(S's\x93#\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">body</td><td style="vertical-align:top;">:</td><td><div>&lt;cStringIO.StringO object at 0x08F75700&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_virtualizacion</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-7c35ab5f-defc-4ffc-809e-b20df98d2fd6<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div>/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">delimiters</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>{{</div></td></tr><tr><td><div>}}</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">files</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">flash</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">form_label_separator</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">formstyle</td><td style="vertical-align:top;">:</td><td><div>bootstrap3_inline</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">generic_patterns</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>*</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">headers</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">X-Powered-By</td><td style="vertical-align:top;">:</td><td><div>web2py</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">menu</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div><table><tr><td><div>\xc3\x8dndice</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/Virtualizacion/default/index</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>User</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/Virtualizacion/default/user_manage</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Profesor</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/Virtualizacion/default/profesor</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Disenador</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/Virtualizacion/default/disenador</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Course</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/Virtualizacion/default/course_manage</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Recurso</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/Virtualizacion/default/recurso</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Program</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/Virtualizacion/default/program_manage</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Has Course</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/Virtualizacion/default/has_course_manage</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Register User</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/Virtualizacion/default/register_user</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Dashboard</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/Virtualizacion/default/dashboard</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">meta</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">author</td><td style="vertical-align:top;">:</td><td><div>Aminosoft &lt;aminosoft@gmail.com&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">description</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">keywords</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">models_to_run</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>^\\w+\\.py$</div></td></tr><tr><td><div>^default/\\w+\\.py$</div></td></tr><tr><td><div>^default/desverificar_resources/\\w+\\.py$</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">postprocessing</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_client</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_compression_level</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_expires</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_data_name</td><td style="vertical-align:top;">:</td><td><div>session_data_virtualizacion</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_file</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;C:\\\\Users\\\\user\\\\Documents\\\\universidad\\\\desarrollo de software\\\\web2py\\\\applications\\\\Virtualizacion\\\\sessions\\\\12c\\\\1f1\\\\127.0.0.1-7c35ab5f-defc-4ffc-809e-b20df98d2fd6&#x27;, mode &#x27;rb+&#x27; at 0x08B54700&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_filename</td><td style="vertical-align:top;">:</td><td><div>C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\applications\\Virtualizacion\\sessions\\127.0.0.1-7c35ab5f-defc-4ffc-809e-b20df98d2fd6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_hash</td><td style="vertical-align:top;">:</td><td><div>264a7d8fcabfc3f89bd8a3cef956a594</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-7c35ab5f-defc-4ffc-809e-b20df98d2fd6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_name</td><td style="vertical-align:top;">:</td><td><div>session_id_virtualizacion</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_locked</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_masterapp</td><td style="vertical-align:top;">:</td><td><div>Virtualizacion</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_new</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_storage_type</td><td style="vertical-align:top;">:</td><td><div>file</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">status</td><td style="vertical-align:top;">:</td><td><div>200</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">subtitle</td><td style="vertical-align:top;">:</td><td><div>powered by web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">title</td><td style="vertical-align:top;">:</td><td><div>Gestor de virtualizacion</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">view</td><td style="vertical-align:top;">:</td><td><div>default/desverificar_resources.html</div></td></tr></table></div>'
+tRp176
+sS'locals'
+p177
+(dp178
+S'id_resource'
+p179
+S"''"
+p180
+sS'row'
+p181
+S'None'
+p182
+sssS'traceback'
+p183
+S'Traceback (most recent call last):\n  File "C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\gluon\\restricted.py", line 227, in restricted\n    exec ccode in environment\n  File "C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\applications\\Virtualizacion\\controllers/default.py", line 376, in <module>\n  File "C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\gluon\\globals.py", line 417, in <lambda>\n    self._caller = lambda f: f()\n  File "C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\gluon\\tools.py", line 4241, in f\n    return action(*a, **b)\n  File "C:\\Users\\user\\Documents\\universidad\\desarrollo de software\\web2py\\applications\\Virtualizacion\\controllers/default.py", line 191, in desverificar_resources\n    row.update_record(f_is_verificado=False)\nAttributeError: \'NoneType\' object has no attribute \'update_record\'\n'
+p184
+s.

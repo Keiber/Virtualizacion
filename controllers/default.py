@@ -184,6 +184,21 @@ def verificar_resources():
     redirect(URL('display_resources'))  
     #return locals()
 
+@auth.requires_login()
+def desverificar_resources():
+    id_resource = request.post_vars['id_resource']
+    comentario = request.post_vars['comment']
+    row = db(db.t_resource.id == id_resource).select().first()
+    row.update_record(f_is_verificado=False)
+
+    course = db.t_comments.insert(
+        recurso = id_resource,
+        texto = comentario,
+    )
+
+    redirect(URL('display_resources'))  
+    #return locals()
+
 
 def display_file_form():
     record = db.t_file(request.args(0))
@@ -354,3 +369,13 @@ def get_user_names():
         names = names + str(name['auth_user.first_name']) + ' ' + str(name['auth_user.last_name']) + '|'
     data = {'usernames': names}
     return data
+
+@auth.requires_login()
+def profesor():
+    return dict()
+
+@auth.requires_login()
+def disenador():
+    return dict()
+
+
