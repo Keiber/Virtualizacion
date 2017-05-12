@@ -37,9 +37,15 @@ def get_users():
         return dict(users = usuarios_sistema, length_users = len(usuarios_sistema))
     return locals()
 
-@auth.requires_login()
+#@auth.requires_login()
 @request.restful()
 def get_programs():
+    response.view = 'generic.json'
+    response.headers["Access-Control-Allow-Origin"] = '*'
+    response.headers['Access-Control-Max-Age'] = 86400
+    response.headers['Access-Control-Allow-Headers'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = '*'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
     def GET(*args, **vars):
         projects = db(db.t_project).select()  
         programs = db(db.t_program).select()
@@ -48,15 +54,19 @@ def get_programs():
         for fila in projects:
             for programa in programs:                
                 if fila.f_program.id == programa.id:
-                    data.append(dict(programa = programa, virtualizado = 1, progreso = fila.f_progress))
+                    data.append(dict(programa = programa, virtualizado = True, progreso = fila.f_progress))
 
+        auxiliar_list = data
         for aux in programs:
-            for virt in data:
+            for virt in auxiliar_list:
                 if aux.id == virt["programa"].id:
                     cont_aux = 1
-                    pass
+                    break
             if cont_aux == 0:
-                data.append(dict(programa = aux, virtualizado = 0, progreso = "0%"))
+                data.append(dict(programa = aux, virtualizado = False, progreso = "0%"))
+                cont_aux = 1
+            else:
+                cont_aux = 0
         return dict(data = data)
     return locals()
 
