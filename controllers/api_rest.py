@@ -60,7 +60,6 @@ def get_programs():
         return dict(data = data)
     return locals()
 
-
 @auth.requires_login()
 @request.restful()
 def get_notifications():
@@ -252,6 +251,27 @@ def desverificar_resources():
         else:    
             db.commit()     
             return dict(status = "200", msg= "Operación exitosa", contenido = "Se ha actualizado el recurso a desverificado")
+    return locals()
+
+
+
+@request.restful()
+def insert_project():
+    def GET(*args, **vars):        
+        return dict()
+
+    def POST(id_program):
+        try:
+            db.t_project.insert(
+                f_program = id_program,
+                f_progress = "0%"
+            )
+        except:
+            db.rollback()
+            return dict(status = "500", msg= "Error en el servidor", contenido = "Error en el servidor")
+        else:    
+            db.commit()     
+            return dict(status = "200", msg= "Operación exitosa", contenido = "Se ha insertado el proyecto exitosamente")
     return locals()
 
 #@auth.requires_login()
