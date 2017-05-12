@@ -39,18 +39,34 @@ def get_users():
 
 @auth.requires_login()
 @request.restful()
+def get_programs():
+    def GET(*args, **vars):
+        projects = db(db.t_project).select()  
+        programs = db(db.t_program).select()
+        data = list()
+        cont_aux = 0
+        for fila in projects:
+            for programa in programs:                
+                if fila.f_program.id == programa.id:
+                    data.append(dict(programa = programa, virtualizado = 1, progreso = fila.f_progress))
+
+        for aux in programs:
+            for virt in data:
+                if aux.id == virt["programa"].id:
+                    cont_aux = 1
+                    pass
+            if cont_aux == 0:
+                data.append(dict(programa = aux, virtualizado = 0, progreso = "0%"))
+        return dict(data = data)
+    return locals()
+
+
+@auth.requires_login()
+@request.restful()
 def get_notifications():
     def GET(*args, **vars):
         notificacion = db(db.t_notification.f_usuario_b == auth.user.id).select()
         return dict(notification = notificacion, length_notification = len(notificacion) )
-    return locals()
-
-@auth.requires_login()
-@request.restful()
-def get_programs():
-    def GET(*args, **vars):
-        res = db(db.t_program).select()
-        return dict(programs = res, length_users = len(res))
     return locals()
 
 @auth.requires_login()
@@ -337,7 +353,7 @@ def create_program_courses():
             return dict(status = "500", msg= "Error en el servidor", contenido = "Error en el servidor")
         else:    
             db.commit()     
-            return dict(status = "200", msg= "Operación exitosa", contenido = dict('duration': complete_duration, 'size': size, 'modality' : modality, 'programs': programsIDs))
+            return dict(status = "200", msg= "Operación exitosa", contenido = dict(duration = complete_duration, size = size, modality = modality, programs = programsIDs))
     return locals()
 
 @auth.requires_login()
@@ -378,5 +394,5 @@ def save_course():
             return dict(status = "500", msg= "Error en el servidor", contenido = "Error en el servidor")
         else:    
             db.commit()     
-            return dict(status = "200", msg= "Operación exitosa", contenido = dict('course': course, 'has_course': has_course, 'course_name': course_name, 'status': status))
+            return dict(status = "200", msg= "Operación exitosa", contenido = dict(course = course, has_course = has_course, course_name = course_name, status= status))
     return locals()
