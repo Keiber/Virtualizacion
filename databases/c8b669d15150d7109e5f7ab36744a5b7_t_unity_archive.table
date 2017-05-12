@@ -164,25 +164,9 @@ I00
 sg20
 S'reference auth_user'
 p49
-ssS'f_modality'
+ssS'modified_on'
 p50
 (dp51
-g4
-L3L
-sg5
-S'CHAR(512)'
-p52
-sg7
-L512L
-sg8
-L0L
-sg9
-L0L
-sg10
-g11
-ssS'modified_on'
-p53
-(dp54
 g14
 I512
 sg15
@@ -191,14 +175,14 @@ sg16
 I8
 sg17
 S'TIMESTAMP'
-p55
+p52
 sg19
 I00
 sg20
 g45
 ssS'modified_by'
-p56
-(dp57
+p53
+(dp54
 g14
 I512
 sg15
@@ -207,12 +191,11 @@ sg16
 I9
 sg17
 S'INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  '
-p58
+p55
 sg19
 I00
 sg20
 g49
-=======
 ssS'f_responsable'
 p56
 (dp57
@@ -231,8 +214,8 @@ sg10
 S'reference t_usuario'
 p59
 ssS'id'
-p59
-(dp60
+p60
+(dp61
 g14
 I512
 sg15
@@ -241,22 +224,20 @@ sg16
 I1
 sg17
 S'INTEGER PRIMARY KEY AUTOINCREMENT'
-p61
+p62
 sg19
 I00
 sg20
 S'id'
-p62
-ssS'f_responsable'
 p63
-(dp64
+ssS'f_modality'
+p64
+(dp65
 g4
-L5L
-=======
 L3L
 sg5
-S'INTEGER REFERENCES t_usuario (id) ON DELETE CASCADE  '
-p65
+S'CHAR(512)'
+p66
 sg7
 L512L
 sg8
@@ -264,6 +245,5 @@ L0L
 sg9
 L0L
 sg10
-S'reference t_usuario'
-p66
+g11
 ss.
