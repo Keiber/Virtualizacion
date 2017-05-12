@@ -132,16 +132,24 @@ def create_notification():
         user_emisor, user_receptor, titulo, contenido = auth.user.id, user_receptor_request, titulo_request, contenido_request
         select = db(db.t_usuario.f_first_name == user_receptor).select()
         id_receptor = 0
+
         for row in select:
             id_receptor = row.id
-        db.t_notification.insert(
-            f_usuario_a = user_emisor,
-            f_usuario_b = id_receptor,
-            f_tittle = titulo,
-            f_viewed = False,
-            f_content = contenido
-            )    
-        return dict()
+        try:            
+            db.t_notification.insert(
+                f_usuario_a = user_emisor,
+                f_usuario_b = id_receptor,
+                f_tittle = titulo,
+                f_viewed = False,
+                f_content = contenido
+                )             
+        except:
+            db.rollback()
+            return dict(status = "500", msg= "Error en el servidor", contenido = "Error en el servidor")
+        else:
+            db.commit()
+            return dict(status = "200", msg= "Operación exitosa", contenido = "Se ha creado la notificación "+titulo+" correctamente")
+
     return locals()
 
 @auth.requires_login()
@@ -151,22 +159,28 @@ def create_user():
         return dict()
     def POST(user_name, name, last_name, user_type, email, password): 
         #user_name, name, last_name, user_type, email, password = request.post_vars['user_name'],request.post_vars['name'], request.post_vars['last_name'], request.post_vars['user_type'], request.post_vars['email'], request.post_vars['password']
-        db.t_usuario.insert(
-                f_username=user_name,
-                f_first_name=name,
-                f_last_name=last_name,           
-                f_email=email,
-                f_password=db.auth_user.password.requires[0](password)[0],
-                f_type_user=user_type,
-                f_notification="0"
-            )
-        db.auth_user.insert(
-                first_name=name,
-                last_name=last_name,           
-                email=email,
-                password=db.auth_user.password.requires[0](password)[0],           
-            )   
-        return dict()
+        try:
+            db.t_usuario.insert(
+                    f_username=user_name,
+                    f_first_name=name,
+                    f_last_name=last_name,           
+                    f_email=email,
+                    f_password=db.auth_user.password.requires[0](password)[0],
+                    f_type_user=user_type,
+                    f_notification="0"
+                )
+            db.auth_user.insert(
+                    first_name=name,
+                    last_name=last_name,           
+                    email=email,
+                    password=db.auth_user.password.requires[0](password)[0],           
+                )  
+        except:
+            db.rollback()
+            return dict(status = "500", msg= "Error en el servidor", contenido = "Error en el servidor")
+        else:    
+            db.commit()     
+            return dict(status = "200", msg= "Operación exitosa", contenido = "Se ha creado el usuario "+user_name+" correctamente")
     return locals()
 
 @auth.requires_login()
@@ -176,11 +190,18 @@ def verificar_planillas():
         return dict()
 
     def POST(id_resource):
-        row = db(db.t_resource.id == id_resource).select().first()
-        row.update_record(f_is_verificado=True)
-        return dict()
+        try:
+            row = db(db.t_resource.id == id_resource).select().first()
+            row.update_record(f_is_verificado=True)
+        except:
+            db.rollback()
+            return dict(status = "500", msg= "Error en el servidor", contenido = "Error en el servidor")
+        else:    
+            db.commit()     
+            return dict(status = "200", msg= "Operación exitosa", contenido = "Se ha actualizado el recurso a verificado")
     return locals()
 
+#REVISAR ESTA ------------------------------------------------------
 @auth.requires_login()
 @request.restful()
 def verificar_resources():
@@ -192,7 +213,7 @@ def verificar_resources():
         row.update_record(f_is_verificado=True)
         return dict()
     return locals()
-
+#--------------------------------------------------------------------
 @auth.requires_login()
 @request.restful()
 def desverificar_resources():
@@ -200,41 +221,47 @@ def desverificar_resources():
         return dict()
 
     def POST(id_resource, comment):
-        comentario = comment
-        row = db(db.t_resource.id == id_resource).select().first()
-        row.update_record(f_is_verificado=False)
+        try:
+            comentario = comment
+            row = db(db.t_resource.id == id_resource).select().first()
+            row.update_record(f_is_verificado=False)
 
-        course = db.t_comments.insert(
-            recurso = id_resource,
-            texto = comentario,
-        )
-        return dict()
+            course = db.t_comments.insert(
+                recurso = id_resource,
+                texto = comentario,
+            )
+        except:
+            db.rollback()
+            return dict(status = "500", msg= "Error en el servidor", contenido = "Error en el servidor")
+        else:    
+            db.commit()     
+            return dict(status = "200", msg= "Operación exitosa", contenido = "Se ha actualizado el recurso a desverificado")
     return locals()
 
-@auth.requires_login()
-@request.restful()
-def create_program():
-    def GET(*args, **vars):        
-        return dict()
-
-    def POST(program_type):
-        program_name = ""
-
-        if (program_type == "carreraLarga"):
-            program_name = "Carrera Larga"
-        elif (program_type == "carreraCorta"):
-            program_name = "Carrera Corta"
-        elif (program_type == "postgrado"):
-            program_name = "Postgrado"
-        elif (program_type == "diplomado"):
-            program_name = "Diplomado"
-        elif (program_type == "curso"):
-            program_name = "Curso"
-        elif (program_type == "programa"):
-            program_name = "Programa"
-        data = {'program_type': program_type, 'program_name': program_name}
-        return data
-    return locals()
+#@auth.requires_login()
+#@request.restful()
+#def create_program():
+#    def GET(*args, **vars):
+#        program_name = ""
+#
+#        if (program_type == "carreraLarga"):
+#            program_name = "Carrera Larga"
+#        elif (program_type == "carreraCorta"):
+#            program_name = "Carrera Corta"
+#        elif (program_type == "postgrado"):
+#            program_name = "Postgrado"
+#        elif (program_type == "diplomado"):
+#            program_name = "Diplomado"
+#        elif (program_type == "curso"):
+#            program_name = "Curso"
+#        elif (program_type == "programa"):
+#            program_name = "Programa"
+#        data = {'program_type': program_type, 'program_name': program_name}
+#        return data   
+#    def POST(program_type):
+#        return dict()
+#
+#    return locals()
 
 @auth.requires_login()
 @request.restful()
@@ -251,61 +278,66 @@ def create_program_courses():
        # print("HOLA")
 
         # Getting size
-        size = 0
-        if (modality=='trimestral'):
-            size = 3
-        elif (modality=='semestral'):
-            size = 6
-        elif (modality=='anual'):
-            size = 12
+        try:
+            size = 0
+            if (modality=='trimestral'):
+                size = 3
+            elif (modality=='semestral'):
+                size = 6
+            elif (modality=='anual'):
+                size = 12
 
-        # Create Database Entries
-        if (program_type in ('carreraLarga', 'carreraCorta', 'postgrado')):
-            # Nivel de anidacion I
-            level_one_id = db.t_program.insert(
-                f_name = name,
-                f_modality = modality,
-                f_code = code,
-                f_duration = duration,
-                f_level = 0
-            )
-
-            complete_duration = int(duration)*12/size
-
-            programsIDs = list()
-
-            for i in range(0, complete_duration):
-                level_two_id = db.t_program.insert(
-                    f_name = name + ' - ' + modality + ' - ' + str(i),
-                    f_modality = None,
+            # Create Database Entries
+            if (program_type in ('carreraLarga', 'carreraCorta', 'postgrado')):
+                # Nivel de anidacion I
+                level_one_id = db.t_program.insert(
+                    f_name = name,
+                    f_modality = modality,
                     f_code = code,
-                    f_duration = size,
-                    f_level = 1
+                    f_duration = duration,
+                    f_level = 0
                 )
 
-                db.t_has_program.insert(
-                    f_program_a = level_one_id,
-                    f_program_b = level_two_id
+                complete_duration = int(duration)*12/size
+
+                programsIDs = list()
+
+                for i in range(0, complete_duration):
+                    level_two_id = db.t_program.insert(
+                        f_name = name + ' - ' + modality + ' - ' + str(i),
+                        f_modality = None,
+                        f_code = code,
+                        f_duration = size,
+                        f_level = 1
+                    )
+
+                    db.t_has_program.insert(
+                        f_program_a = level_one_id,
+                        f_program_b = level_two_id
+                    )
+
+                    programsIDs.append(level_two_id)
+            elif (program_type in ('diplomado', 'curso') ):
+                complete_duration = int(duration)*12/size
+
+                # Nivel de anidacion 0
+                level_one_id = db.t_program.insert(
+                    f_name = name,
+                    f_modality = modality,
+                    f_code = code,
+                    f_duration = duration
                 )
-
-                programsIDs.append(level_two_id)
-        elif (program_type in ('diplomado', 'curso') ):
-            complete_duration = int(duration)*12/size
-
-            # Nivel de anidacion 0 
-            level_one_id = db.t_program.insert(
-                f_name = name,
-                f_modality = modality,
-                f_code = code,
-                f_duration = duration
-            )
-            programsIDs.append(level_one_id)
-        elif (program_type == 'programa'):
-            # Nivel de anidacion variable
-            complete_duration = int(duration)*12/size
-            pass
-
-        return {'duration': complete_duration, 'size': size, 'modality' : modality, 'programs': programsIDs}
+                programsIDs.append(level_one_id)
+            elif (program_type == 'programa'):
+                # Nivel de anidacion variable
+                complete_duration = int(duration)*12/size
+                pass
+        except:
+            db.rollback()
+            return dict(status = "500", msg= "Error en el servidor", contenido = "Error en el servidor")
+        else:    
+            db.commit()     
+            return dict(status = "200", msg= "Operación exitosa", contenido = dict('duration': complete_duration, 'size': size, 'modality' : modality, 'programs': programsIDs))
     return locals()
 
 @auth.requires_login()
@@ -315,32 +347,36 @@ def save_course():
         return dict()
 
     def POST(program, course_code, course_name):
-        message = ''
-        status = False
-        
-        # DB Inserts
-        validate = False
-        sanity_check_course = db(db.t_course.f_code == course_code).select()
+        try:
+            message = ''
+            status = False
+            
+            # DB Inserts
+            validate = False
+            sanity_check_course = db(db.t_course.f_code == course_code).select()
 
-        for row in sanity_check_course:
-            validate = True
+            for row in sanity_check_course:
+                validate = True
 
-        if ( not validate ):
-            print("This case is triggered")
-            course = db.t_course.insert(
-                f_code = course_code,
-                f_name = course_name,
-            )
-        else:
-            course = sanity_check_course[0]
+            if ( not validate ):
+                print("This case is triggered")
+                course = db.t_course.insert(
+                    f_code = course_code,
+                    f_name = course_name,
+                )
+            else:
+                course = sanity_check_course[0]
 
-        has_course = db.t_has_course.insert(
-            f_program_has = program,
-            f_course_has = course
-        );
+            has_course = db.t_has_course.insert(
+                f_program_has = program,
+                f_course_has = course
+            );
 
-        status = has_course != None and course != None
-
-        data = {'course': course, 'has_course': has_course, 'course_name': course_name, 'status': status}
-        return data
+            status = has_course != None and course != None
+        except:
+            db.rollback()
+            return dict(status = "500", msg= "Error en el servidor", contenido = "Error en el servidor")
+        else:    
+            db.commit()     
+            return dict(status = "200", msg= "Operación exitosa", contenido = dict('course': course, 'has_course': has_course, 'course_name': course_name, 'status': status))
     return locals()
