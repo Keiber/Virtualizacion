@@ -178,7 +178,6 @@ p51
 sg19
 I00
 sg20
-<<<<<<< HEAD
 g48
 =======
 S'string'
@@ -200,7 +199,6 @@ L0L
 sg10
 S'integer'
 p51
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 ssS'f_viewed'
 p52
 (dp53

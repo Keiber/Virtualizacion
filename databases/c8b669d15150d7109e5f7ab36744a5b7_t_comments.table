@@ -112,7 +112,6 @@ sg9
 I00
 sg10
 g11
-<<<<<<< HEAD
 ssS'modified_on'
 p37
 (dp38
@@ -137,13 +136,11 @@ p40
 ssS'created_on'
 p41
 (dp42
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 g4
 I512
 sg5
 I00
 sg6
-<<<<<<< HEAD
 I7
 sg7
 S'TIMESTAMP'
@@ -153,12 +150,10 @@ I5
 sg7
 S'TIMESTAMP'
 p43
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 sg9
 I00
 sg10
 S'datetime'
-<<<<<<< HEAD
 p40
 ssS'created_on'
 p41
@@ -168,13 +163,11 @@ p44
 ssS'modified_on'
 p45
 (dp46
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 g4
 I512
 sg5
 I00
 sg6
-<<<<<<< HEAD
 I5
 sg7
 S'TIMESTAMP'
@@ -209,7 +202,6 @@ sg9
 I00
 sg10
 g44
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 ssS'id'
 p48
 (dp49

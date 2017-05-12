@@ -143,19 +143,16 @@ ssS'f_date_start'
 p38
 (dp39
 S'sortable'
-<<<<<<< HEAD
 p40
 L5L
 =======
 p44
 L6L
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 sS'sql'
 p41
 S'DATE'
 p42
 sS'length'
-<<<<<<< HEAD
 p43
 L512L
 sS'notnull'
@@ -171,7 +168,6 @@ p48
 L0L
 sS'unique'
 p49
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 L0L
 sS'type'
 p46
@@ -229,7 +225,6 @@ p57
 ssS'id'
 p58
 (dp59
-<<<<<<< HEAD
 g4
 I512
 sg5
@@ -258,7 +253,6 @@ L0L
 sg50
 g51
 ssS'f_responsable'
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 p61
 ssS'f_modality'
 p62

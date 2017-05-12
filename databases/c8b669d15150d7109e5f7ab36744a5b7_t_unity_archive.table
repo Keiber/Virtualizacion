@@ -212,7 +212,6 @@ sg19
 I00
 sg20
 g49
-<<<<<<< HEAD
 =======
 ssS'f_responsable'
 p56
@@ -231,7 +230,6 @@ L0L
 sg10
 S'reference t_usuario'
 p59
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 ssS'id'
 p59
 (dp60
@@ -253,11 +251,9 @@ ssS'f_responsable'
 p63
 (dp64
 g4
-<<<<<<< HEAD
 L5L
 =======
 L3L
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 sg5
 S'INTEGER REFERENCES t_usuario (id) ON DELETE CASCADE  '
 p65

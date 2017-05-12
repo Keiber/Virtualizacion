@@ -144,7 +144,6 @@ p43
 sg9
 I00
 sg10
-<<<<<<< HEAD
 S'datetime'
 p44
 ssS'f_type'
@@ -179,7 +178,6 @@ L0L
 sS'type'
 p46
 S'string'
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 p47
 sg36
 L512L
@@ -209,7 +207,6 @@ p51
 ssS'f_code_course'
 p52
 (dp53
-<<<<<<< HEAD
 g33
 L3L
 sg34
@@ -235,13 +232,11 @@ L0L
 sg45
 L0L
 sg46
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 S'reference t_course'
 p55
 ssS'modified_on'
 p56
 (dp57
-<<<<<<< HEAD
 g4
 I512
 sg5
@@ -269,7 +264,6 @@ sg45
 L0L
 sg46
 g47
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 ssS'modified_by'
 p59
 (dp60

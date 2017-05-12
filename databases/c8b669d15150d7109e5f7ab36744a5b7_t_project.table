@@ -190,7 +190,6 @@ p63
 sg19
 I00
 sg20
-<<<<<<< HEAD
 g60
 =======
 S'string'
@@ -218,7 +217,6 @@ sS'type'
 p62
 S'integer'
 p63
->>>>>>> f9505a55bb2163d72eadb5a17fd2b01b871a74e4
 ssS'f_viewed'
 p64
 (dp65
