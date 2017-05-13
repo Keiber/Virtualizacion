@@ -8,7 +8,7 @@ Proyecto para la materia Laboratorio General (Desarrollo de software), perteneci
 Para instalar esta aplicación en su ambiente local:
 
 1. Diríjase a la carpeta aplicaciones del framework web2py.
-2. Desde el command line ejecute `git clone https://github.com/eudp/gestor_de_virtualizacion.git`.
+2. Desde el command line ejecute `git clone https://github.com/Leyzurt/Virtualizacion.git`.
 
 ### Pre-requisitos
 
