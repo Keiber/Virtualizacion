@@ -11181,3 +11181,477 @@ success!
 success!
 success!
 success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2017-05-12T22:19:01.580000
+ALTER TABLE t_resource ADD f_code_topic INTEGER REFERENCES t_topic (id) ON DELETE CASCADE  ;
+success!
+timestamp: 2017-05-12T22:19:01.665000
+CREATE TABLE t_notification_course(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    f_usuario INTEGER REFERENCES t_usuario (id) ON DELETE CASCADE  ,
+    f_curso INTEGER REFERENCES t_course (id) ON DELETE CASCADE  ,
+    f_title CHAR(512),
+    f_viewed CHAR(1),
+    f_content TEXT,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2017-05-12T22:19:01.734000
+CREATE TABLE t_notification_resource(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    f_usuario INTEGER REFERENCES t_usuario (id) ON DELETE CASCADE  ,
+    f_resource INTEGER REFERENCES t_resource (id) ON DELETE CASCADE  ,
+    f_title CHAR(512),
+    f_viewed CHAR(1),
+    f_content TEXT,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2017-05-12T22:19:01.831000
+CREATE TABLE t_notification_file(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    f_usuario INTEGER REFERENCES t_usuario (id) ON DELETE CASCADE  ,
+    f_file INTEGER REFERENCES t_file (id) ON DELETE CASCADE  ,
+    f_title CHAR(512),
+    f_viewed CHAR(1),
+    f_content TEXT,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2017-05-12T22:19:01.900000
+CREATE TABLE t_permisology_course(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    f_usuario INTEGER REFERENCES t_usuario (id) ON DELETE CASCADE  ,
+    f_curso INTEGER REFERENCES t_course (id) ON DELETE CASCADE  ,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2017-05-12T22:19:01.988000
+CREATE TABLE t_permisology_resource(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    f_usuario INTEGER REFERENCES t_usuario (id) ON DELETE CASCADE  ,
+    f_resource INTEGER REFERENCES t_resource (id) ON DELETE CASCADE  ,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2017-05-12T22:19:02.051000
+CREATE TABLE t_permisology_file(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    f_usuario INTEGER REFERENCES t_usuario (id) ON DELETE CASCADE  ,
+    f_file INTEGER REFERENCES t_file (id) ON DELETE CASCADE  ,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

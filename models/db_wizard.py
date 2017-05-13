@@ -1,6 +1,5 @@
 ### we prepend t_ to tablenames and f_ to fieldnames for disambiguity
 
-
 ########################################
 db.define_table('t_program',
     Field('f_name', type='string',
@@ -21,7 +20,20 @@ db.define_table('t_program',
     format='%(f_name)s',
     migrate=settings.migrate)
 
-db.define_table('t_program_archive',db.t_program,Field('current_record','reference t_program',readable=False,writable=False))
+#db.define_table('t_program_archive',db.t_program,Field('current_record','reference t_program',readable=False,writable=False))
+
+########################################### PROYECTO
+
+db.define_table('t_project',
+    Field('f_program', type='reference t_program',
+          label=T('Program')),
+    Field('f_progress', type='string',
+          label=T('Progress')),
+    auth.signature,
+    format='%(f_program)s',
+    migrate=settings.migrate)
+
+#db.define_table('t_project_archive', db.t_project,Field('current_record','reference t_project', readable=False, writable=False))
 
 
 ########################################
@@ -35,9 +47,11 @@ db.define_table('t_has_program',
     format='%(f_program_has)s',
     migrate=settings.migrate)
 
-db.define_table('t_has_program_archive', db.t_has_program,Field('current_record','reference t_has_program', readable=False, writable=False))
+#db.define_table('t_has_program_archive', db.t_has_program,Field('current_record','reference t_has_program', readable=False, writable=False))
+
 
 ########################################
+
 db.define_table('t_usuario',
     Field('f_first_name', type='string',
           label=T('First Name')),
@@ -57,9 +71,10 @@ db.define_table('t_usuario',
     format='Username: %(f_username)s ID: %(id)s',
     migrate=settings.migrate)
 
-db.define_table('t_usuario_archive',db.t_usuario,Field('current_record','reference t_usuario',readable=False,writable=False))
+#db.define_table('t_usuario_archive',db.t_usuario,Field('current_record','reference t_usuario',readable=False,writable=False))
 
 ########################################
+
 db.define_table('t_course',
     Field('f_name', type='string',
           label=T('Name')),
@@ -75,9 +90,11 @@ db.define_table('t_course',
     format='Nombre: %(f_name)s ID: %(f_code)s',
     migrate=settings.migrate)
 
-db.define_table('t_course_archive',db.t_course,Field('current_record','reference t_course',readable=False,writable=False))
+#db.define_table('t_course_archive',db.t_course,Field('current_record','reference t_course',readable=False,writable=False))
+
 
 ########################################
+
 db.define_table('t_has_course',
     Field('f_program_has', type='reference t_program',
           label=T('Program Has')),
@@ -87,27 +104,40 @@ db.define_table('t_has_course',
     format='%(f_program_has)s',
     migrate=settings.migrate)
 
-db.define_table('t_has_course_archive',db.t_has_course,Field('current_record','reference t_has_course',readable=False,writable=False))
+#db.define_table('t_has_course_archive',db.t_has_course,Field('current_record','reference t_has_course',readable=False,writable=False))
 
 ########################################
 
-db.define_table('t_notification',
-    Field('f_usuario_a', type='integer',
-          label=T('Usuario_a')),
-    Field('f_usuario_b', type='integer',
-          label=T('Usuario_b')),
-    Field('f_tittle', type='string',
-          label=T('Tittle')),
-    Field('f_viewed', type='boolean',
-          label=T('Viewed')),
-    Field('f_content', type='text',
-          label=T('Content')),
+db.define_table('t_unity',
+    Field('f_course', type='reference t_course',
+          label=T('Course')),
+    Field('f_name', type='string',
+          label=T('Name')),
+    Field('f_objective', type='text',
+          label=T('Objective')),
     auth.signature,
-    format='%(t_notification)s',
+    format='%(f_name)s',
     migrate=settings.migrate)
 
-db.define_table('t_notification_archive', db.t_notification,Field('current_record','reference t_notification', readable=False, writable=False))
+#db.define_table('t_unity_archive',db.t_unity,Field('current_record','reference t_unity',readable=False,writable=False))
 
+
+############################################# TEMA 
+
+db.define_table('t_topic',
+    Field('f_name', type='string',
+          label=T('Name')),
+    Field('f_objective', type='text',
+          label=T('Objective')),
+    Field('f_unity', type='reference t_unity',
+          label=T('Unity')),
+    Field('f_modality', type='string',
+          label=T('Modality')),
+    auth.signature,
+    format='%(f_name)s',
+    migrate=settings.migrate)
+
+#db.define_table('t_topic_archive',db.t_topic,Field('current_record','reference t_topic',readable=False,writable=False))
 
 ######################################## Agregado E K
 db.define_table('t_resource',
@@ -115,7 +145,7 @@ db.define_table('t_resource',
           label=T('Name')),
     Field('f_area', type='string',
           label=T('Area')),
-    Field('f_code_course', type='reference t_course',
+    Field('f_code_topic', type='reference t_topic',
           label=T('CodeCourse')),
     Field('f_responsable', type='reference t_usuario',
           label=T('Responsable')),
@@ -133,7 +163,7 @@ db.define_table('t_resource',
     format='%(f_name)s',
     migrate=settings.migrate)
 
-db.define_table('t_recurso_archive',db.t_resource,Field('current_record','reference t_resource',readable=False,writable=False))
+#db.define_table('t_recurso_archive',db.t_resource,Field('current_record','reference t_resource',readable=False,writable=False))
 
 ######################################## Agregado E K
 
@@ -152,87 +182,123 @@ db.define_table('t_file',
     format='%(f_name)s',
     migrate=settings.migrate)
 
-db.define_table('t_file_archive',db.t_file,Field('current_record','reference t_file',readable=False,writable=False))
+#db.define_table('t_file_archive',db.t_file,Field('current_record','reference t_file',readable=False,writable=False))
 
 
-########################################### PROYECTO
+############################################ 
 
-db.define_table('t_project',
-    Field('f_program', type='reference t_program',
-          label=T('Program')),
-    Field('f_progress', type='string',
-          label=T('Progress')),
+db.define_table('t_notification_course',
+    Field('f_usuario', type='reference t_usuario',
+          label=T('Creator')),
+    Field('f_curso', type='reference t_course',
+          label=T('Curso al que pertenece')),
+    Field('f_title', type='string',
+          label=T('Title')),
+    Field('f_viewed', type='boolean',
+          label=T('Viewed')),
+    Field('f_content', type='text',
+          label=T('Content')),
     auth.signature,
-    format='%(f_program)s',
+    format='%(t_notification)s',
     migrate=settings.migrate)
 
-db.define_table('t_project_archive', db.t_project,Field('current_record','reference t_project', readable=False, writable=False))
+#db.define_table('t_notification_archive', db.t_notification,Field('current_record','reference t_notification', readable=False, writable=False))
 
 
-############################################ CURSO (RECURSO DIDACTICO)
+############################################ 
 
-
-db.define_table('t_unity',
-    Field('f_course', type='reference t_course',
-          label=T('Course')),
-    Field('f_name', type='string',
-          label=T('Name')),
-    Field('f_objective', type='text',
-          label=T('Objective')),
+db.define_table('t_notification_resource',
+    Field('f_usuario', type='reference t_usuario',
+          label=T('Creator')),
+    Field('f_resource', type='reference t_resource',
+          label=T('Recurso al que pertenece')),
+    Field('f_title', type='string',
+          label=T('Title')),
+    Field('f_viewed', type='boolean',
+          label=T('Viewed')),
+    Field('f_content', type='text',
+          label=T('Content')),
     auth.signature,
-    format='%(f_name)s',
+    format='%(t_notification)s',
     migrate=settings.migrate)
 
-db.define_table('t_unity_archive',db.t_unity,Field('current_record','reference t_unity',readable=False,writable=False))
+#db.define_table('t_notification_archive', db.t_notification,Field('current_record','reference t_notification', readable=False, writable=False))
 
 
-############################################# TEMA 
+############################################ 
 
-db.define_table('t_topic',
-    Field('f_name', type='string',
-          label=T('Name')),
-    Field('f_objective', type='text',
-          label=T('Objective')),
-    Field('f_unity', type='reference t_unity',
-          label=T('Unity')),
-    Field('f_modality', type='string',
-          label=T('Modality')),
+db.define_table('t_notification_file',
+    Field('f_usuario', type='reference t_usuario',
+          label=T('Creator')),
+    Field('f_file', type='reference t_file',
+          label=T('Archivo al que pertenece')),
+    Field('f_title', type='string',
+          label=T('Title')),
+    Field('f_viewed', type='boolean',
+          label=T('Viewed')),
+    Field('f_content', type='text',
+          label=T('Content')),
     auth.signature,
-    format='%(f_name)s',
+    format='%(t_notification)s',
     migrate=settings.migrate)
 
-db.define_table('t_topic_archive',db.t_topic,Field('current_record','reference t_topic',readable=False,writable=False))
+#db.define_table('t_notification_archive', db.t_notification,Field('current_record','reference t_notification', readable=False, writable=False))
 
-############################################ OBJETIVOS
+############################################ 
 
-db.define_table('t_activity',
-    Field('f_name', type='string',
-          label=T('Name')),
-    Field('f_topic', type='reference t_topic',
-          label=T('Name')),
-    Field('f_objective', type='text',
-          label=T('Objective')),
-    Field('f_resource', type='text',
-          label=T('Resource')),
-    Field('f_evaluation', type='text',
-          label=T('Evaluation')),
+db.define_table('t_permisology_course',
+    Field('f_usuario', type='reference t_usuario',
+          label=T('Usuario')),
+    Field('f_curso', type='reference t_course',
+          label=T('Curso al que tiene permisologia')),
     auth.signature,
-    format='%(f_name)s',
+    format='%(t_notification)s',
     migrate=settings.migrate)
 
-db.define_table('t_activity_archive',db.t_activity,Field('current_record','reference t_activity',readable=False,writable=False))
+#db.define_table('t_notification_archive', db.t_notification,Field('current_record','reference t_notification', readable=False, writable=False))
 
-############################################ COMENTARIOS RECURSOS
 
-db.define_table('t_comments',
-    Field('recurso', type='reference t_resource',
-          label=T('Recurso')),
-    # Field('curso', type='reference t_course',
-    #       label=T('Curso')),
-    Field('texto', type='text',
-          label=T('Texto')),
+############################################ 
+
+db.define_table('t_permisology_resource',
+    Field('f_usuario', type='reference t_usuario',
+          label=T('Usuario')),
+    Field('f_resource', type='reference t_resource',
+          label=T('Recurso al que tiene permisologia')),
     auth.signature,
-    format='%(f_name)s',
+    format='%(t_notification)s',
     migrate=settings.migrate)
 
-db.define_table('t_comments_archive',db.t_activity,Field('current_record','reference t_comments',readable=False,writable=False))
+#db.define_table('t_notification_archive', db.t_notification,Field('current_record','reference t_notification', readable=False, writable=False))
+
+
+############################################ 
+
+db.define_table('t_permisology_file',
+    Field('f_usuario', type='reference t_usuario',
+          label=T('Usuario')),
+    Field('f_file', type='reference t_file',
+          label=T('Archivo al que tiene permisologia')),
+    auth.signature,
+    format='%(t_notification)s',
+    migrate=settings.migrate)
+
+#db.define_table('t_notification_archive', db.t_notification,Field('current_record','reference t_notification', readable=False, writable=False))
+
+
+############################################ 
+
+db.define_table('t_notification',
+    Field('f_usuario_a', type='integer',
+          label=T('Usuario_a')),
+    Field('f_usuario_b', type='integer',
+          label=T('Usuario_b')),
+    Field('f_tittle', type='string',
+          label=T('Tittle')),
+    Field('f_viewed', type='boolean',
+          label=T('Viewed')),
+    Field('f_content', type='text',
+          label=T('Content')),
+    auth.signature,
+    format='%(t_notification)s',
+    migrate=settings.migrate)
