@@ -52,29 +52,6 @@ db.define_table('t_has_program',
 
 ########################################
 
-db.define_table('t_usuario',
-    Field('f_first_name', type='string',
-          label=T('First Name')),
-    Field('f_username', type='string',
-          label=T('Username')),
-    Field('f_last_name', type='string',
-          label=T('Last Name')),
-    Field('f_email', type='string', unique = True,
-          label=T('Email')),
-    Field('f_password', type='string',
-          label=T('Password')),
-    Field('f_type_user', type='string',
-          label=T('Type User')),
-    Field('f_notification', type='string',
-          label=T('Notification')),
-    auth.signature,
-    format='Username: %(f_username)s ID: %(id)s',
-    migrate=settings.migrate)
-
-#db.define_table('t_usuario_archive',db.t_usuario,Field('current_record','reference t_usuario',readable=False,writable=False))
-
-########################################
-
 db.define_table('t_course',
     Field('f_name', type='string',
           label=T('Name')),
@@ -82,7 +59,7 @@ db.define_table('t_course',
           label=T('Modality')),
     Field('f_code', type='string', unique = True,
           label=T('Code')),
-    Field('f_responsable', type='reference t_usuario',
+    Field('f_responsable', type='reference auth_user',
           label=T('Responsable')),
     Field('f_duration', type='integer',
           label=T('Duration')),
@@ -147,7 +124,7 @@ db.define_table('t_resource',
           label=T('Area')),
     Field('f_code_topic', type='reference t_topic',
           label=T('CodeCourse')),
-    Field('f_responsable', type='reference t_usuario',
+    Field('f_responsable', type='reference auth_user',
           label=T('Responsable')),
     Field('f_type', type='string',
           label=T('Type')),
@@ -174,7 +151,7 @@ db.define_table('t_file',
           label=T('CodeResource')),
     Field('f_description', type='string',
            label=T('Description')),
-    Field('f_responsable', type='reference t_usuario',
+    Field('f_responsable', type='reference auth_user',
            label=T('Responsable')),
     Field('f_file','upload',
             label=T('File')),
@@ -188,7 +165,7 @@ db.define_table('t_file',
 ############################################ 
 
 db.define_table('t_notification_course',
-    Field('f_usuario', type='reference t_usuario',
+    Field('f_usuario', type='reference auth_user',
           label=T('Creator')),
     Field('f_curso', type='reference t_course',
           label=T('Curso al que pertenece')),
@@ -208,7 +185,7 @@ db.define_table('t_notification_course',
 ############################################ 
 
 db.define_table('t_notification_resource',
-    Field('f_usuario', type='reference t_usuario',
+    Field('f_usuario', type='reference auth_user',
           label=T('Creator')),
     Field('f_resource', type='reference t_resource',
           label=T('Recurso al que pertenece')),
@@ -228,7 +205,7 @@ db.define_table('t_notification_resource',
 ############################################ 
 
 db.define_table('t_notification_file',
-    Field('f_usuario', type='reference t_usuario',
+    Field('f_usuario', type='reference auth_user',
           label=T('Creator')),
     Field('f_file', type='reference t_file',
           label=T('Archivo al que pertenece')),
@@ -247,7 +224,7 @@ db.define_table('t_notification_file',
 ############################################ 
 
 db.define_table('t_permisology_course',
-    Field('f_usuario', type='reference t_usuario',
+    Field('f_usuario', type='reference auth_user',
           label=T('Usuario')),
     Field('f_curso', type='reference t_course',
           label=T('Curso al que tiene permisologia')),
@@ -261,7 +238,7 @@ db.define_table('t_permisology_course',
 ############################################ 
 
 db.define_table('t_permisology_resource',
-    Field('f_usuario', type='reference t_usuario',
+    Field('f_usuario', type='reference auth_user',
           label=T('Usuario')),
     Field('f_resource', type='reference t_resource',
           label=T('Recurso al que tiene permisologia')),
@@ -275,7 +252,7 @@ db.define_table('t_permisology_resource',
 ############################################ 
 
 db.define_table('t_permisology_file',
-    Field('f_usuario', type='reference t_usuario',
+    Field('f_usuario', type='reference auth_user',
           label=T('Usuario')),
     Field('f_file', type='reference t_file',
           label=T('Archivo al que tiene permisologia')),
@@ -302,3 +279,28 @@ db.define_table('t_notification',
     auth.signature,
     format='%(t_notification)s',
     migrate=settings.migrate)
+
+
+###########################################
+
+db.define_table('t_usuario',
+    Field('f_first_name', type='string',
+          label=T('First Name')),
+    Field('f_username', type='string',
+          label=T('Username')),
+    Field('f_last_name', type='string',
+          label=T('Last Name')),
+    Field('f_email', type='string', unique = True,
+          label=T('Email')),
+    Field('f_password', type='string',
+          label=T('Password')),
+    Field('f_type_user', type='string',
+          label=T('Type User')),
+    Field('f_notification', type='string',
+          label=T('Notification')),
+    auth.signature,
+    format='Username: %(f_username)s ID: %(id)s',
+    migrate=settings.migrate)
+
+#db.define_table('t_usuario_archive',db.t_usuario,Field('current_record','reference t_usuario',readable=False,writable=False))
+

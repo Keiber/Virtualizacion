@@ -88,7 +88,7 @@ sg9
 I00
 sg10
 g11
-ssS'f_is_planilla'
+ssS'created_by'
 p26
 (dp27
 g4
@@ -96,17 +96,18 @@ I512
 sg5
 I00
 sg6
-I9
+I13
 sg7
-S'CHAR(1)'
+S'INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  '
 p28
 sg9
 I00
 sg10
-g18
-ssS'modified_on'
+S'reference auth_user'
 p29
-(dp30
+ssS'modified_on'
+p30
+(dp31
 g4
 I512
 sg5
@@ -115,28 +116,27 @@ sg6
 I14
 sg7
 S'TIMESTAMP'
-p31
+p32
 sg9
 I00
 sg10
 g22
-ssS'modified_by'
-p32
-(dp33
+ssS'f_description'
+p33
+(dp34
 g4
 I512
 sg5
 I00
 sg6
-I15
+I8
 sg7
-S'INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  '
-p34
+S'CHAR(512)'
+p35
 sg9
 I00
 sg10
-S'reference auth_user'
-p35
+g11
 ssS'id'
 p36
 (dp37
@@ -164,12 +164,12 @@ I00
 sg6
 I5
 sg7
-S'INTEGER REFERENCES t_usuario (id) ON DELETE CASCADE  '
+S'INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  '
 p42
 sg9
 I00
 sg10
-S'reference t_usuario'
+S'reference auth_user'
 p43
 ssS'f_is_verificado'
 p44
@@ -187,7 +187,7 @@ sg9
 I00
 sg10
 g18
-ssS'f_description'
+ssS'modified_by'
 p47
 (dp48
 g4
@@ -195,15 +195,15 @@ I512
 sg5
 I00
 sg6
-I8
+I15
 sg7
-S'CHAR(512)'
+S'INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  '
 p49
 sg9
 I00
 sg10
-g11
-ssS'created_by'
+g29
+ssS'f_is_planilla'
 p50
 (dp51
 g4
@@ -211,14 +211,14 @@ I512
 sg5
 I00
 sg6
-I13
+I9
 sg7
-S'INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  '
+S'CHAR(1)'
 p52
 sg9
 I00
 sg10
-g35
+g18
 ssS'f_code_course'
 p53
 (dp54

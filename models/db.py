@@ -87,10 +87,26 @@ auth = Auth(db, host_names=myconf.get('host.names'))
 service = Service()
 plugins = PluginManager()
 
+
+# -------------------------------------------------------------------------
+# Esta tabla almacena los tipos de usuarios que hay en el proyecto 
+# -------------------------------------------------------------------------
+
+db.define_table('t_tipos_de_usuario',
+    Field('f_type_user', type='string',
+            label=T('Tipo de Usuario')),
+            format='%(f_type_user)s'
+    )
+
 # -------------------------------------------------------------------------
 # create all tables needed by auth if not custom tables
 # -------------------------------------------------------------------------
+
+#Agregando campo extra a auth.user
+auth.settings.extra_fields[auth.settings.table_user_name] = [Field('f_tipo_usuario', type='reference t_tipos_de_usuario',label=T('Type User1'))]
+
 auth.define_tables(username=False, signature=False)
+
 
 # -------------------------------------------------------------------------
 # configure email

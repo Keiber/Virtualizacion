@@ -165,12 +165,12 @@ I00
 sg6
 I2
 sg7
-S'INTEGER REFERENCES t_usuario (id) ON DELETE CASCADE  '
+S'INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  '
 p43
 sg9
 I00
 sg10
-S'reference t_usuario'
+S'reference auth_user'
 p44
 ssS'id'
 p45
@@ -187,5 +187,6 @@ p47
 sg9
 I00
 sg10
-g45
+S'id'
+p48
 ss.
