@@ -27,11 +27,6 @@ def validar_form_archivo(form):
         form.errors.f_description = 'todos los campos deben estar llenos'
 
 #API_REST
-@request.restful()
-def getLogin():
-    def GET(*args, **vars):
-        return dict(form=auth())
-    return locals()
 
 #GETS
 @auth.requires_login()
@@ -42,15 +37,9 @@ def get_users():
         return dict(users = usuarios_sistema, length_users = len(usuarios_sistema))
     return locals()
 
-#@auth.requires_login()
+@auth.requires_login()
 @request.restful()
 def get_programs():
-    response.view = 'generic.json'
-    response.headers["Access-Control-Allow-Origin"] = '*'
-    response.headers['Access-Control-Max-Age'] = 86400
-    response.headers['Access-Control-Allow-Headers'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = '*'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
     def GET(*args, **vars):
         projects = db(db.t_project).select()  
         programs = db(db.t_program).select()
