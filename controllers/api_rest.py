@@ -36,7 +36,7 @@ def getLogin():
     response.headers['Access-Control-Allow-Methods'] = '*'
     response.headers['Access-Control-Allow-Credentials'] = 'true'
     def GET(*args, **vars):
-        return dict(form=auth())
+        return dict(form="hola")
     return locals()
 
 #GETS
