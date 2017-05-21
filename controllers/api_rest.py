@@ -126,6 +126,8 @@ def get_programs():
     response.headers['Access-Control-Allow-Methods'] = '*'
     response.headers['Access-Control-Allow-Credentials'] = 'true'
     def GET(*args, **vars):
+        if not validar_api_key(request.env.http_api_key):
+            return dict(status= "400", msg = "No se encuentra conectado", contenido = "No se encuentra conectado")
         projects = db(db.t_project).select()  
         programs = db(db.t_program).select()
         data = list()
