@@ -1,6 +1,18 @@
 #GENERAL FUNCTIONS
 from hashlib import md5
+response.view = 'generic.json'
+response.headers["Access-Control-Allow-Origin"] = '*'
+response.headers['Access-Control-Max-Age'] = 86400
+response.headers['Access-Control-Allow-Headers'] = '*'
+response.headers['Access-Control-Allow-Methods'] = '*'
+response.headers['Access-Control-Allow-Credentials'] = 'true'
 def validar_api_key(key):
+    response.view = 'generic.json'
+    response.headers["Access-Control-Allow-Origin"] = '*'
+    response.headers['Access-Control-Max-Age'] = 86400
+    response.headers['Access-Control-Allow-Headers'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = '*'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
     respuesta = db(db.t_session.api_key == key).select().first()
     if respuesta:
         return True
