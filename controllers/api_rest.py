@@ -1,5 +1,5 @@
 #GENERAL FUNCTIONS
-
+from hashlib import md5
 def validar_form_recurso(form):
     c = form.vars.f_name
     t = form.vars.f_type
@@ -54,7 +54,23 @@ def get_users():
         return dict(users = usuarios_sistema, length_users = len(usuarios_sistema))
     return locals()
 
-#@auth.requires_login()
+@request.restful()
+def Login():
+    response.view = 'generic.json'
+    response.headers["Access-Control-Allow-Origin"] = '*'
+    response.headers['Access-Control-Max-Age'] = 86400
+    response.headers['Access-Control-Allow-Headers'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = '*'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+    def POST(email, passw):
+        wola_vale = db.auth_user.password.validate(passw) == (db(db.auth_user.email==email).select ().first ().password, None)
+        #session.key = md5(passw).hexdigest()[:20]
+        print("-----------")
+        session.cualquier_verga = md5(passw).hexdigest()[:20]
+        #request['key'] = md5(passw).hexdigest()[:20]
+        return dict(responses=session)        
+    return locals()
+
 @request.restful()
 def get_programs():
     response.view = 'generic.json'
@@ -66,6 +82,7 @@ def get_programs():
     def GET(*args, **vars):
         projects = db(db.t_project).select()  
         programs = db(db.t_program).select()
+        print(session)
         data = list()
         cont_aux = 0
         for fila in projects:
