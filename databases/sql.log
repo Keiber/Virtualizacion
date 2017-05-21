@@ -14214,3 +14214,13 @@ success!
 success!
 success!
 success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2017-05-20T23:01:56.249000
+ALTER TABLE t_notification ADD f_title CHAR(512);
+success!
