@@ -22,13 +22,15 @@ db.define_table('t_program',
 
 #db.define_table('t_program_archive',db.t_program,Field('current_record','reference t_program',readable=False,writable=False))
 
-########################################### PROYECTO
+###########################################
 
 db.define_table('t_project',
     Field('f_program', type='reference t_program',
           label=T('Program')),
     Field('f_progress', type='string',
           label=T('Progress')),
+    Field('f_virtualizado', type='string',
+          label=T('Virtualizado')),
     auth.signature,
     format='%(f_program)s',
     migrate=settings.migrate)
@@ -99,7 +101,7 @@ db.define_table('t_unity',
 #db.define_table('t_unity_archive',db.t_unity,Field('current_record','reference t_unity',readable=False,writable=False))
 
 
-############################################# TEMA 
+#############################################
 
 db.define_table('t_topic',
     Field('f_name', type='string',
@@ -116,7 +118,7 @@ db.define_table('t_topic',
 
 #db.define_table('t_topic_archive',db.t_topic,Field('current_record','reference t_topic',readable=False,writable=False))
 
-######################################## Agregado E K
+########################################
 db.define_table('t_resource',
     Field('f_name', type='string',
           label=T('Name')),
@@ -142,7 +144,7 @@ db.define_table('t_resource',
 
 #db.define_table('t_recurso_archive',db.t_resource,Field('current_record','reference t_resource',readable=False,writable=False))
 
-######################################## Agregado E K
+########################################
 
 db.define_table('t_file',
     Field('f_name', type='string',
@@ -270,8 +272,8 @@ db.define_table('t_notification',
           label=T('Usuario_a')),
     Field('f_usuario_b', type='integer',
           label=T('Usuario_b')),
-    Field('f_tittle', type='string',
-          label=T('Tittle')),
+    Field('f_title', type='string',
+          label=T('Title')),
     Field('f_viewed', type='boolean',
           label=T('Viewed')),
     Field('f_content', type='text',
@@ -281,7 +283,7 @@ db.define_table('t_notification',
     migrate=settings.migrate)
 
 
-###########################################
+########################################### Esra tabla solo la dejamos para que funcionara la versión actual la aplciación
 
 db.define_table('t_usuario',
     Field('f_first_name', type='string',
