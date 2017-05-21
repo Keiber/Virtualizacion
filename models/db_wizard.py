@@ -236,3 +236,18 @@ db.define_table('t_comments',
     migrate=settings.migrate)
 
 db.define_table('t_comments_archive',db.t_activity,Field('current_record','reference t_comments',readable=False,writable=False))
+
+
+
+######################################### SESION
+
+db.define_table('t_session',
+    Field('api_key', type='string', unique = True,
+          label=T('Api_Key')),
+    Field('user_key', type='string',
+          label=T('User_Key')),
+    auth.signature,
+    format='%(user)s',
+    migrate=settings.migrate)
+
+db.define_table('t_session_archive',db.t_activity,Field('current_record','reference t_session',readable=False,writable=False))

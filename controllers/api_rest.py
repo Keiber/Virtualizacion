@@ -1,5 +1,12 @@
 #GENERAL FUNCTIONS
 from hashlib import md5
+def validar_api_key(key):
+    respuesta = db(db.t_session.api_key == key).select().first()
+    if respuesta:
+        return True
+    else:
+        return False
+
 def validar_form_recurso(form):
     c = form.vars.f_name
     t = form.vars.f_type
@@ -40,7 +47,7 @@ def getLogin():
     return locals()
 
 #GETS
-@auth.requires_login()
+#@auth.requires_login()
 @request.restful()
 def get_users():
     response.view = 'generic.json'
@@ -50,9 +57,29 @@ def get_users():
     response.headers['Access-Control-Allow-Methods'] = '*'
     response.headers['Access-Control-Allow-Credentials'] = 'true'
     def GET(*args, **vars):
+        if not validar_api_key(request.env.http_api_key):
+            return dict(status= "400", msg = "No se encuentra conectado", contenido = "No se encuentra conectado")
         usuarios_sistema = db(db.t_usuario).select()
         return dict(users = usuarios_sistema, length_users = len(usuarios_sistema))
     return locals()
+
+@request.restful()
+def Logout():
+    response.view = 'generic.json'
+    response.headers["Access-Control-Allow-Origin"] = '*'
+    response.headers['Access-Control-Max-Age'] = 86400
+    response.headers['Access-Control-Allow-Headers'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = '*'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+    def DELETE():
+        api_key = request.env.http_api_key
+        respuesta = db(db.t_session.api_key == api_key).select().first()
+        if respuesta:
+            db(db.t_session.api_key == api_key).delete()    
+        return dict(status= "200", msg = "Cierre de sesión exitoso", contenido = "Cierre de sesión exitoso")
+
+    return locals()
+
 
 @request.restful()
 def Login():
@@ -64,11 +91,30 @@ def Login():
     response.headers['Access-Control-Allow-Credentials'] = 'true'
     def POST(email, passw):
         wola_vale = db.auth_user.password.validate(passw) == (db(db.auth_user.email==email).select ().first ().password, None)
-        #session.key = md5(passw).hexdigest()[:20]
-        print("-----------")
-        session.cualquier_verga = md5(passw).hexdigest()[:20]
-        #request['key'] = md5(passw).hexdigest()[:20]
-        return dict(responses=session)        
+        print(wola_vale)
+        if wola_vale:
+            respuesta = db(db.t_session.user_key == email).select().first()
+            variable = md5(passw).hexdigest()[:28]
+            content = dict()
+            if respuesta:
+                content['api_key'] = respuesta.api_key
+                content['user_key'] = email
+                return dict(status= "200", msg = "Login exitoso", contenido = content)
+            else:                
+                try:            
+                    db.t_session.insert(
+                        api_key = variable,
+                        user_key = email,
+                        )             
+                except:
+                    db.rollback()                    
+                    return dict(status = "500", msg= "Error en el servidor", contenido = "Error en el servidor")
+                else:
+                    db.commit()  
+                    content['api_key'] = variable
+                    content['user_key'] = email  
+                    return dict(status= "200", msg = "Login exitoso", contenido = content) 
+        return dict(status= "400", msg = "Usuario no existe en el sistema", contenido = "No existe")       
     return locals()
 
 @request.restful()
@@ -82,7 +128,6 @@ def get_programs():
     def GET(*args, **vars):
         projects = db(db.t_project).select()  
         programs = db(db.t_program).select()
-        print(session)
         data = list()
         cont_aux = 0
         for fila in projects:

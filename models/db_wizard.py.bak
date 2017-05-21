@@ -113,6 +113,8 @@ db.define_table('t_notification_archive', db.t_notification,Field('current_recor
 db.define_table('t_resource',
     Field('f_name', type='string',
           label=T('Name')),
+    Field('f_area', type='string',
+          label=T('Area')),
     Field('f_code_course', type='reference t_course',
           label=T('CodeCourse')),
     Field('f_responsable', type='reference t_usuario',
@@ -219,3 +221,33 @@ db.define_table('t_activity',
     migrate=settings.migrate)
 
 db.define_table('t_activity_archive',db.t_activity,Field('current_record','reference t_activity',readable=False,writable=False))
+
+############################################ COMENTARIOS RECURSOS
+
+db.define_table('t_comments',
+    Field('recurso', type='reference t_resource',
+          label=T('Recurso')),
+    # Field('curso', type='reference t_course',
+    #       label=T('Curso')),
+    Field('texto', type='text',
+          label=T('Texto')),
+    auth.signature,
+    format='%(f_name)s',
+    migrate=settings.migrate)
+
+db.define_table('t_comments_archive',db.t_activity,Field('current_record','reference t_comments',readable=False,writable=False))
+
+
+
+######################################### SESION
+
+db.define_table('t_session',
+    Field('api_key', type='string', unique = True,
+          label=T('Key')),
+    Field('user', type='string',
+          label=T('User')),
+    auth.signature,
+    format='%(user)s',
+    migrate=settings.migrate)
+
+db.define_table('t_session_archive',db.t_activity,Field('current_record','reference t_session',readable=False,writable=False))
